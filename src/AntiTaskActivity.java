@@ -6,4 +6,5 @@ public class AntiTaskActivity extends TaskActivity{
       super(name, startTime, endTime, date);
         this.recurringTaskLink = recurringTask;
     }
+    
 }
