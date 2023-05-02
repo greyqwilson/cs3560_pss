@@ -1,3 +1,4 @@
+package cs3560_pss;
 
 public class TaskActivity{
     private String name; 
@@ -9,7 +10,7 @@ public class TaskActivity{
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.data = date;
+        this.date = date;
     }
 
     public int calcDuration(){
@@ -20,7 +21,7 @@ public class TaskActivity{
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.data = date;
+        this.date = date;
     }
 
     

@@ -1,4 +1,4 @@
-package src;
+package cs3560_pss;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,7 @@ public class ScheduleModel {
     }
 
     public TaskActivity createTask(String name) {
+		return null;
         
     }
 
@@ -18,6 +19,7 @@ public class ScheduleModel {
     }
 
     public TaskActivity editTask(String name) {
+		return null;
 
     }
 

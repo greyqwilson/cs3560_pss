@@ -1,26 +1,29 @@
-package src;
+package cs3560_pss;
 import java.util.ArrayList;
 
 public class Calendar {
     ArrayList<Schedule> scheduleList;
-    ArrayList<Integer>[][] monthAndDayList; //??
+//    ArrayList<Integer>[][] monthAndDayList; //??
     Display display;
 
     public Calendar() {
         scheduleList = new ArrayList<Schedule>();
         //initialize monthAndDayList
-        display = new Display();
+        display = new Display(null);
     }
 
-    public boolean createTask(Task task){
+    public boolean createTask(TaskActivity task){
+		return false;
 
     }
 
-    public boolean deleteTask(Task task){
+    public boolean deleteTask(TaskActivity task){
+		return false;
         
     }
 
     public boolean searchTask(String name){
+		return false;
 
     }
 
@@ -45,10 +48,12 @@ public class Calendar {
     }
 
     public Schedule returnScheduleFile(int date){
+		return null;
 
     }
 
-    public boolean checkForConflict(Task task){
+    public boolean checkForConflict(TaskActivity task){
+		return false;
 
     }
 
@@ -56,9 +61,9 @@ public class Calendar {
         return scheduleList;
     }
 
-    public ArrayList<Integer> getMonthDayList() {
-        return monthAndDayList;
-    }
+//    public ArrayList<Integer> getMonthDayList() {
+//        return monthAndDayList;
+//    }
 
     public Display getDisplay() {
         return display;

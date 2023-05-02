@@ -1,3 +1,5 @@
+package cs3560_pss;
+
 public class Display{
 
     private Calendar calendar;
@@ -7,7 +9,8 @@ public class Display{
     }
 
 
-    public Task searchTask(TaskActivity task){
+    public TaskActivity searchTask(TaskActivity task){
+		return task;
 
     }
 

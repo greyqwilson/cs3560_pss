@@ -1,3 +1,4 @@
+package cs3560_pss;
 import java.util.*;
 
 public class Schedule {
@@ -10,7 +11,7 @@ public class Schedule {
     }
 
     public Schedule(int date, ArrayList <TaskActivity> taskList){
-        this.taskList = taskList.clone();
+        this.taskList = (ArrayList<TaskActivity>) taskList.clone();
     }
 
     
