@@ -2,16 +2,22 @@ package src;
 import java.util.ArrayList;
 
 public class Calendar {
-    ArrayList<Schedule> ScheduleList;
-    ArrayList<Integer>[][] monthAndDayList;
+    ArrayList<Schedule> scheduleList;
+    ArrayList<Integer>[][] monthAndDayList; //??
     Display display;
+
+    public Calendar() {
+        scheduleList = new ArrayList<Schedule>();
+        //initialize monthAndDayList
+        display = new Display();
+    }
 
     public boolean createTask(Task task){
 
     }
 
     public boolean deleteTask(Task task){
-
+        
     }
 
     public boolean searchTask(String name){
@@ -44,5 +50,17 @@ public class Calendar {
 
     public boolean checkForConflict(Task task){
 
+    }
+
+    public ArrayList<Schedule> getScheduleList() {
+        return scheduleList;
+    }
+
+    public ArrayList<Integer> getMonthDayList() {
+        return monthAndDayList;
+    }
+
+    public Display getDisplay() {
+        return display;
     }
 }
