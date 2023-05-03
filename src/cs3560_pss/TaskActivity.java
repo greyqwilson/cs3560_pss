@@ -29,7 +29,7 @@ public class TaskActivity{
         this.date = date;
     }
 
-    public int calcDuration(){
+    public int getDuration(){
         return endTime - startTime;
     }
     
