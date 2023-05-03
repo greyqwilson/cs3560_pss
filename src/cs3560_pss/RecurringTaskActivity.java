@@ -4,6 +4,11 @@ public class RecurringTaskActivity extends TaskActivity{
     private int frequency;
     private int startDate;
     private int endDate;
+    private String[] types = 
+    		{
+    		"Class", "Study", "Sleep", 
+    		"Exercise", "Work", "Meal"
+    		};
 
     
     public RecurringTaskActivity(String name, int startTime, int endTime, int date, int frequency, int startDate, int endDate){

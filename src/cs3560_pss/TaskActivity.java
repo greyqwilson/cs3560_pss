@@ -1,5 +1,6 @@
 package cs3560_pss;
 
+
 public class TaskActivity{
     private String name; 
     private int startTime;
@@ -23,6 +24,8 @@ public class TaskActivity{
         this.endTime = endTime;
         this.date = date;
     }
+    
+    
 
     
 }
