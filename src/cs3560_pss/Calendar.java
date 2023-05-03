@@ -58,6 +58,7 @@ public class Calendar {
     }
 
     public boolean searchTask(String name){
+      for(Schedule s : scheduleList)
 		return false;
 
     }
