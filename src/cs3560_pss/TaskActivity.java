@@ -37,14 +37,14 @@ public class TaskActivity{
     	return type;
     }
     
-    public int getYear() {
-    	return Integer.parseInt(String.valueOf(date).substring(0,4));
+    public static int getYear(int inputDate) {
+    	return Integer.parseInt(String.valueOf(inputDate).substring(0,4));
     }
-    public int getMonth() {
-    	return Integer.parseInt(String.valueOf(date).substring(4,6));
+    public static int getMonth(int inputDate) {
+    	return Integer.parseInt(String.valueOf(inputDate).substring(4,6));
     }
-    public int getDay() {
-    	return Integer.parseInt(String.valueOf(date).substring(6,8));
+    public static int getDay(int inputDate) {
+    	return Integer.parseInt(String.valueOf(inputDate).substring(6,8));
     }
     
     public int getStartTime() {
@@ -101,6 +101,10 @@ public class TaskActivity{
     	
     	return false;
     }
+
+
+
+
 
     
 }
