@@ -291,10 +291,10 @@ public class Calendar {
 							schedule.addTask(task);
 
 							// need to figure out how to account for tasks wrapping into other days
-							int taskDuration = task.getDuration();
+							double taskDuration = task.getDuration();
 
 							// get the amount of time left in the day
-							int timeLeft = 24 - task.getStartTime();
+							double timeLeft = 24 - task.getStartTime();
 
 							// if the amount of time left in the day is less than the duration of the task
 							// then we have to insert the remainder of the task into the next day(s)
@@ -308,7 +308,7 @@ public class Calendar {
 									// then we insert the remainder of that task into the beginning of the next year
 									// this should also be the endTime since wrapping into another day would make
 									// the start time of the remainder 0
-									int durationRemainder = taskDuration - timeLeft;
+									double durationRemainder = taskDuration - timeLeft;
 
 									int newYear = currentYearIndex + 1 + 2020;
 									int newDate = Integer.parseInt(String.valueOf(newYear) + "0101");
@@ -349,7 +349,7 @@ public class Calendar {
 
 									// get remaining duration, this still also be the new end time since the start
 									// time will be 0
-									int durationRemainder = taskDuration - timeLeft;
+									double durationRemainder = taskDuration - timeLeft;
 
 									// create a task with the remaining duration, the new date, and same types/name
 									RecurringTaskActivity remainderTask = new RecurringTaskActivity(name, typeString, 0,
@@ -426,9 +426,10 @@ public class Calendar {
 				// return error
 			}
 
-			// get the task at that position
-			TaskActivity targetTask = this.scheduleList.get(taskPositions[0]).get(taskPositions[1]).getTaskList()
-					.get(taskPositions[2]);
+			// get the schedule, task list, and task at that position
+			Schedule targetSchedule = this.scheduleList.get(taskPositions[0]).get(taskPositions[1]);
+			ArrayList<TaskActivity> targetTaskList = targetSchedule.getTaskList();
+			TaskActivity targetTask = targetTaskList.get(taskPositions[2]);
 
 			// if the task isn't recurring, then return an error
 			if (!targetTask.isRecurringTask()) {
@@ -448,7 +449,7 @@ public class Calendar {
 
 				// if we are at the beginning of the year, then we need to look at the last
 				// schedule of the year before
-				if (TaskActivity.getMonth(date) == 1 && TaskActivity.getDay(date) == 1) {
+				if (taskPositions[1] == 0) {
 					// if we're in 2020, there is no last year, so we're fine
 
 					// otherwise, get the last task of the last schedule of the last year
@@ -465,11 +466,11 @@ public class Calendar {
 
 							// get remainder of last day starting from last task start time
 
-							int remainderOfLastDay = 24 - lastTask.getStartTime();
+							double remainderOfLastDay = 24 - lastTask.getStartTime();
 
 							// get duration
 
-							int lastTaskDuration = lastTask.getDuration();
+							double lastTaskDuration = lastTask.getDuration();
 
 							// if the last task is recurring AND the duration is larger than the remainder
 							// of the day
@@ -489,23 +490,66 @@ public class Calendar {
 				// the schedule of the previous day
 				else {
 					
+					//get the last day's task list
+					ArrayList<TaskActivity> lastTaskList = this.scheduleList.get(taskPositions[0]).get(taskPositions[1] -1).getTaskList();
+					
+					// if the task list is nonempty, grab the last task
+					if(lastTaskList.size() > 0)
+					{
+								TaskActivity lastTask = lastTaskList.get(lastTaskList.size()-1);
+								
+								// get remainder of last day starting from last task start time
+
+								double remainderOfLastDay = 24 - lastTask.getStartTime();
+
+								// get duration
+
+								double lastTaskDuration = lastTask.getDuration();
+
+								// if the last task is recurring AND the duration is larger than the remainder
+								// of the day
+								// then we are targeting the second half of a recurring task, so display error
+
+								if (lastTask.isRecurringTask() && lastTaskDuration > remainderOfLastDay) {
+									// return error
+								}
+					}
+					
 				}
 
 			}
-			// check if a recurring task with a wrapping duration exists, if it does then we
-			// are targeting just the second half of
-			// a recurring task, so the anti task is not valid
-
-			// once we have confirmed that we are not targeting just the second half of a
+			//At this point we have confirmed that we're not targeting just the second half of a
 			// recurring task
 
+			
+			
 			// we need to consider whether the targeted recurring task is wrapping into the
 			// next day or not
 
+			
 			// if it isn't, then we just replace the current target with the anti task
-
+			if(task.getDuration() <= ( 24 - startTime)) {
+				//initiaze the sub array list year if it doesn't exist
+				this.createYear(TaskActivity.getYear(date));
+				
+				//remove task from schedule
+				targetTaskList.remove(taskPositions[2]);
+				
+				//add task to schedule
+				targetSchedule.addTask(task);
+				
+			}
 			// if it is, then we need to first remove the current target and replace it with
 			// the anti task with the same duration and time
+			else {
+				this.createYear(TaskActivity.getYear(date));
+				
+				//remove task from schedule
+				targetTaskList.remove(taskPositions[2]);
+				
+				//add task to schedule
+				targetSchedule.addTask(task);
+			}
 			// then we go into the next day's schedule and remove the first task with
 			// replace it with an anti task of the same duration and time
 
@@ -518,6 +562,7 @@ public class Calendar {
 
 	public boolean deleteTask(TaskActivity task) {
 		return false;
+		
 
 	}
 
@@ -532,7 +577,7 @@ public class Calendar {
 	// the year in the schedule list, the index of the Schedule within that year,
 	// and the index of the task within that Schedule's tasklist
 
-	public Integer[] searchTaskPositionByTime(int date, int startTime, int duration) {
+	public Integer[] searchTaskPositionByTime(int date, double startTime, double duration) {
 
 		// get the year
 		int year = TaskActivity.getYear(date);

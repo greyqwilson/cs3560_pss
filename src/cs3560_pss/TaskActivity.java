@@ -4,8 +4,8 @@ package cs3560_pss;
 public class TaskActivity{
     private String name; 
     private String type;
-    private int startTime;
-    private int endTime;
+    private double startTime;
+    private double duration;
     private int date;
     
     private String[] recurringTaskTypes = 
@@ -21,16 +21,16 @@ public class TaskActivity{
 	
     private String antiTaskType = "Cancellation";
 
-    public TaskActivity(String name, String type, int startTime, int endTime, int date){
+    public TaskActivity(String name, String type, double startTime, double duration, int date){
         this.name = name;
         this.type = type;
         this.startTime = startTime;
-        this.endTime = endTime;
+        this.duration = duration;
         this.date = date;
     }
 
-    public int getDuration(){
-        return endTime - startTime;
+    public double getDuration(){
+        return  this.duration;
     }
     
     public String getType() {
@@ -47,11 +47,18 @@ public class TaskActivity{
     	return Integer.parseInt(String.valueOf(inputDate).substring(6,8));
     }
     
-    public int getStartTime() {
+    public double getStartTime() {
     	return this.startTime;
     }
-    public int getEndTime() {
-    	return this.endTime;
+    public double getEndTime() {
+    	
+    	//get the remainder of start time + duration divided by 24
+    	
+    	double endTime = (this.startTime + duration)%24;
+    	
+    	
+    	return endTime;
+    	
     }
 
     public String getName(){
@@ -62,10 +69,10 @@ public class TaskActivity{
     	return this.date;
     }
     
-    public void editTask(String name, int startTime, int endTime, int date){
+    public void editTask(String name, int startTime, int duration, int date){
         this.name = name;
         this.startTime = startTime;
-        this.endTime = endTime;
+        this.duration = duration;
         this.date = date;
     }
     

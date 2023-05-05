@@ -7,8 +7,8 @@ public class TransientTaskActivity extends TaskActivity{
 		};
     
 
-    public TransientTaskActivity(String name, String type, int startTime, int endTime, int date){
-        super(name, type, startTime, endTime, date);
+    public TransientTaskActivity(String name, String type, double startTime, double duration, int date){
+        super(name, type, startTime, duration, date);
       }
     
     public boolean isTransientTask(TaskActivity task) {

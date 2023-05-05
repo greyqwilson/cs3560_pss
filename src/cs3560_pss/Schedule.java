@@ -18,8 +18,8 @@ public class Schedule {
     public void addTask(TaskActivity task){
 		//new task's start and end time
 		
-		int newStart = task.getStartTime();
-		int newEnd = newStart + task.getDuration();
+		double newStart = task.getStartTime();
+		double newEnd = newStart + task.getDuration();
 		
 		
     	//if the taskList is empty, just add it to the task list
@@ -33,8 +33,8 @@ public class Schedule {
 			TaskActivity firstTask = taskList.get(0);
 			
 			//first task's start and end time
-			int firstStart = firstTask.getStartTime();
-			int firstEnd = firstStart + firstTask.getDuration();
+			double firstStart = firstTask.getStartTime();
+			double firstEnd = firstStart + firstTask.getDuration();
 
 			//if it starts and ends before the first task, add it before
 			if(newStart < firstStart && newEnd <= firstStart) {
@@ -64,13 +64,13 @@ public class Schedule {
     			TaskActivity secondTask = taskList.get(i+1);
     			    			
     			//first task's start and end time
-    			int firstStart = firstTask.getStartTime();
-    			int firstEnd =  firstStart + firstTask.getDuration();
+    			double firstStart = firstTask.getStartTime();
+    			double firstEnd =  firstStart + firstTask.getDuration();
 
     	
     			//second task's start and end time
-    			int secondStart = secondTask.getStartTime();
-    			int secondEnd = secondStart + secondTask.getDuration();
+    			double secondStart = secondTask.getStartTime();
+    			double secondEnd = secondStart + secondTask.getDuration();
     			
     			
     			//if it starts and ends before the first task, add it before the first
