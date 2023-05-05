@@ -198,7 +198,7 @@ public class Calendar {
 
 	}
 
-	public boolean createTask(String name, int startTime, int endTime, int date, String typeString, int frequency,
+	public boolean createTask(String name, int startTime, int duration, int date, String typeString, int frequency,
 			int startDate, int endDate) {
 
 		String[] recurringTaskTypes = { "Class", "Study", "Sleep", "Exercise", "Work", "Meal" };
@@ -229,7 +229,7 @@ public class Calendar {
 		}
 
 		if (isRecurring) {
-			RecurringTaskActivity task = new RecurringTaskActivity(name, typeString, startTime, endTime, date,
+			RecurringTaskActivity task = new RecurringTaskActivity(name, typeString, startTime, duration, date,
 					frequency, startDate, endDate);
 
 			// get the year, month, and day separately
@@ -354,6 +354,14 @@ public class Calendar {
 									// create a task with the remaining duration, the new date, and same types/name
 									RecurringTaskActivity remainderTask = new RecurringTaskActivity(name, typeString, 0,
 											durationRemainder, newDate, frequency, startDate, endDate);
+									
+									//get the schedule of the next day
+									Schedule nextSchedule = this.scheduleList.get(currentYearIndex).get(currentDay+ 1);
+									
+									//add the task to the next day's schedule
+									nextSchedule.addTask(remainderTask);
+									
+									
 
 								}
 
@@ -376,7 +384,7 @@ public class Calendar {
 		}
 
 		else if (isTransient) {
-			TransientTaskActivity task = new TransientTaskActivity(name, typeString, startTime, endTime, date);
+			TransientTaskActivity task = new TransientTaskActivity(name, typeString, startTime, duration, date);
 
 			// get the year, month, and day separately
 			int year = TaskActivity.getYear(task.getDate());
@@ -413,7 +421,7 @@ public class Calendar {
 
 		else if (isAnti) {
 			// create anti task
-			AntiTaskActivity task = new AntiTaskActivity(name, typeString, startTime, endTime, date);
+			AntiTaskActivity task = new AntiTaskActivity(name, typeString, startTime, duration, date);
 			// check if the start time given, duration, and date matches a
 			// recurringTaskActivity
 
@@ -549,12 +557,96 @@ public class Calendar {
 				
 				//add task to schedule
 				targetSchedule.addTask(task);
-			}
-			// then we go into the next day's schedule and remove the first task with
-			// replace it with an anti task of the same duration and time
+				
+				// then we go into the next day's schedule and remove the first task with
+				// replace it with an anti task of the same duration and time
+				
+				
+				//if we're at the end of the year, then we need to go into the next year, and remove the first task of the first day
+				
+				if(taskPositions[1] == 364) {
+					
+					//get the index of the next year
+					int nextYearIndex = taskPositions[0] + 1;
+					
+					//get the date of the first day of next year
+					int newDate = Integer.parseInt(String.valueOf(nextYearIndex + 2020) + "0101");
+					
+					
+					//get the schedule of the first day of the next year
+					
+					Schedule nextSchedule = this.scheduleList.get(nextYearIndex).get(0);
+					
+					//get task list of next schedule
+					ArrayList<TaskActivity>nextTaskList = nextSchedule.getTaskList();
+					
+					//remove the first task
+					nextTaskList.remove(0);
+					
+					//create new anti task with the remainder of the duration
+					double remainderDuration = task.getDuration() - (24 - startTime);
+					
+					//since it's wrapping into the next day, start time is 0
+					//and it will have a new date
+					AntiTaskActivity remainderTask = new AntiTaskActivity(name, typeString, 0, remainderDuration, newDate);
+					
+					
+					//add it to the schedule
+					nextSchedule.addTask(remainderTask);
+				}
+				//otherwise, we just go to the next day
+				
+				else {
+					
+					
+					// year is still the same
+					// month and day of of month may be different
 
-			// if the start time given, duration, or date doesn't match
-			// recurringTaskActivity, then return error
+					// calculate new month from number of days from beginning of year of the next
+					// date (based the method on num of days from 1-365 so need to add 2 to the
+					// current day index)
+					int newMonth = this.calculateMonthFromDays( taskPositions[1]+ 2);
+
+					// calculate new day from number of days from beginning of year of the next date
+					// (add 2 for same reason)
+					int newDayOfMonth = this.calculateDayOfMonthFromNumDays( taskPositions[1]+ 2);
+
+					// format them into strings, add a 0 to the number if they are single digits
+
+					String newMonthString = (newMonth < 10 ? "0" : "") + String.valueOf(newMonth);
+					String newDayOfMonthString = (newDayOfMonth < 10 ? "0" : "")
+							+ String.valueOf(newDayOfMonth);
+					String currentYearString = String.valueOf(taskPositions[0] + 2020);
+
+					int newDate = Integer
+							.parseInt(currentYearString + newMonthString + newDayOfMonthString);
+
+					// get remaining duration, this still also be the new end time since the start
+					// time will be 0
+					double durationRemainder = duration - (24 - startTime);
+					
+					//since it's wrapping into the next day, start time is 0
+					//and it will have a new date
+					AntiTaskActivity remainderTask = new AntiTaskActivity(name, typeString, 0, durationRemainder, newDate);
+					
+					//get the next day's schedule
+					
+					Schedule nextSchedule = this.scheduleList.get(taskPositions[0]).get(taskPositions[1] + 1);
+					
+					//get the next day's taskList
+					ArrayList<TaskActivity> nextTaskList = nextSchedule.getTaskList();
+					
+					//remove the first task
+					nextTaskList.remove(0);
+					
+					//add the new remainder task
+					
+					nextSchedule.addTask(remainderTask);
+				}
+
+			}
+			
+			
 		}
 
 		return false;
@@ -600,7 +692,7 @@ public class Calendar {
 		Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
 		ArrayList<TaskActivity> scheduleTasks = schedule.getTaskList();
 
-		// search for index of task with matching starttime and duration
+		// search for index of task with matching start time and duration
 
 		// iterate through task list
 		for (int i = 0; i < scheduleTasks.size(); i++) {
