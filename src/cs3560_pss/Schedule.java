@@ -115,6 +115,8 @@ public class Schedule {
         
     }
     
-    
+    public ArrayList<TaskActivity> getTaskList(){
+    	return this.taskList;
+    }
     
 }
