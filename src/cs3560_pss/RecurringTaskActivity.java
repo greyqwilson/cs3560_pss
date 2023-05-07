@@ -13,4 +13,17 @@ public class RecurringTaskActivity extends TaskActivity{
       this.endDate = endDate;
     }
     
+    
+    public int getStartDate() {
+    	return this.startDate;
+    }
+    
+    
+    public int getEndDate() {
+    	return this.endDate;
+    }
+    
+    public int getFrequency() {
+    	return this.frequency;
+    }
 }
