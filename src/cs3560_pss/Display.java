@@ -155,7 +155,6 @@ public class Display{
           headingLength[i] = heading.length();
           weekHeadingSb.append(heading);
           
-         
           if (tasks.size() > knownMaxTasks)
               knownMaxTasks = tasks.size();
 
@@ -178,8 +177,6 @@ public class Display{
       }
       weekHeadingSb.append("*\n");
 
-      
-
       //Collate each line
       for (int i=0; i<MAXTASKSLISTED && i < knownMaxTasks; i++){
           String taskLine;
@@ -195,16 +192,18 @@ public class Display{
                   taskLine = taskLine.concat(" ".repeat(headingLength[i]-taskLine.length() -1) + "|");
                   weekHeadingSb.append(taskLine);
               }
-              else
-                  break;
+              else{
+                  //The schedule must have no more tasks to print
+                  taskLine = " ".repeat(headingLength[i]-1) + "|";
+                  weekHeadingSb.append(taskLine);
+                  continue;
+              }
+                  
           }
           weekHeadingSb.append("\n");
       }
       return weekHeadingSb.toString();
-
-      
-      
-    }
+  }
 
     private static String formatMonthTasks(Schedule[] schedules){
 
