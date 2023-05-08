@@ -58,11 +58,9 @@ public class Display{
       Schedule[] weekSchedule;
       weekSchedule = calendar.getTasksForWeek(currentWeek);
 
-      TaskActivity[] tasks;
-      for (int i=0; i<7; i++) {
-        tasks[i] = calendar.getTasksForDay(i);
-        printTaskList(tasks);
-      }
+      String weekString = formatWeekTasks(weekSchedule);
+      System.out.print(weekString);
+      
     }
     public void displayTasksforMonth(){
       Schedule[] monthSchedule = calendar.getTasksForMonth(currentMonth);
@@ -164,8 +162,7 @@ public class Display{
           String startTime, endTime, title;
           for (int j=0; j<tasks.size() || j == MAXTASKSLISTED-1; j++){
               title = tasks.get(j).getName();
-              //startTime = String.valueOf(tasks.get(j).getStartTime());
-              //endTime = String.valueOf(tasks.get(j).getEndTime());
+              //Get j'th task of the day's end and start time
               startTime = numberTimeToString(tasks.get(j).getStartTime(), false);
               endTime = numberTimeToString(tasks.get(j).getStartTime(), false);
               
@@ -180,23 +177,23 @@ public class Display{
       weekHeadingSb.append("*\n");
 
       //Collate each line
-      for (int i=0; i<MAXTASKSLISTED && i < knownMaxTasks; i++){
+      for (int row=0; row<MAXTASKSLISTED && row < knownMaxTasks; row++){
           String taskLine;
           //For each column
           
-          for (int j=0; j<weekData.size(); j++){
-              ArrayList< String > scheduleData = weekData.get(j);
-              if (i < scheduleData.size()){
-                  if (j==0){
+          for (int col=0; col<weekData.size(); col++){
+              ArrayList< String > scheduleData = weekData.get(col);
+              if (row < scheduleData.size()){
+                  if (col==0){
                       weekHeadingSb.append("|");
                   }
-                  taskLine = scheduleData.get(i);
-                  taskLine = taskLine.concat(" ".repeat(headingLength[i]-taskLine.length() -1) + "|");
+                  taskLine = scheduleData.get(row);
+                  taskLine = taskLine.concat(" ".repeat(headingLength[row]-taskLine.length() -1) + "|");
                   weekHeadingSb.append(taskLine);
               }
               else{
                   //The schedule must have no more tasks to print
-                  taskLine = " ".repeat(headingLength[i]-1) + "|";
+                  taskLine = " ".repeat(headingLength[row]-1) + "|";
                   weekHeadingSb.append(taskLine);
                   continue;
               }
