@@ -1,122 +1,80 @@
 package cs3560_pss;
+
 import java.util.*;
 
 public class Schedule {
-    private int date;
-    private ArrayList <TaskActivity> taskList;
+	private int date;
+	private ArrayList<TaskActivity> taskList;
 
-    public Schedule(int date){
-        this.date = date;
-        this.taskList = new ArrayList <TaskActivity>();
-    }
+	public Schedule(int date) {
+		this.date = date;
+		this.taskList = new ArrayList<TaskActivity>();
+	}
 
-    public Schedule(int date, ArrayList <TaskActivity> taskList){
-        this.taskList = (ArrayList<TaskActivity>) taskList.clone();
-    }
+	@SuppressWarnings("unchecked")
+	public Schedule(int date, ArrayList<TaskActivity> taskList) {
+		this.date = date;
+		this.taskList = (ArrayList<TaskActivity>) taskList.clone();
+	}
 
-    
-    public void addTask(TaskActivity task){
-		//new task's start and end time
-		
-		double newStart = task.getStartTime();
-		double newEnd = newStart + task.getDuration();
-		
-		
-    	//if the taskList is empty, just add it to the task list
-    	if(taskList.size() == 0){
-    		taskList.add(task);
-    	} // if there is one task in the list
-    	
-    	else if (taskList.size() == 1) {
-    		
-    		//first task
-			TaskActivity firstTask = taskList.get(0);
-			
-			//first task's start and end time
-			double firstStart = firstTask.getStartTime();
-			double firstEnd = firstStart + firstTask.getDuration();
+	public void addTask(TaskActivity task) {
 
-			//if it starts and ends before the first task, add it before
-			if(newStart < firstStart && newEnd <= firstStart) {
-				taskList.add(0, task);
+		this.taskList.add(task);
+	}
+	
+	
+	//sorts tasklist in order of startTime increasing
+	public ArrayList<TaskActivity> getOrderedTaskList(){
+		 ArrayList<TaskActivity> ordered = new ArrayList<TaskActivity>();
+		 
+		 //while taskList is not empty
+		 while(this.taskList.size() > 0) {
+			 
+			 //iterate through list to find earliest task and position
+			 int earliestTask = 0;
+			 TaskActivity earliest = this.taskList.get(0);
+			 for(int i = 1; i < taskList.size(); i ++) {
+				 TaskActivity current = this.getTaskList().get(i);
+				 if(earliest.getStartTime() > current.getStartTime()) {
+					 earliest = current;
+					 earliestTask = i;
+				 }
+			 }
+			 
+			 //remove earliestTask
+			 
+			 this.taskList.remove(earliestTask);
+			 
+			 //add earliest task into ordered arraylist
+			 ordered.add(earliest);
+			 
+		 }
+		 
+		 //set the ordered list to be the tasklist
+		 this.taskList = ordered;
+		 
+		 return this.taskList;
+		 	
+	}
+
+	public void deleteTask(TaskActivity task) {
+
+		// iterate through task list
+		for (int i = 0; i < this.taskList.size(); i++) {
+
+			// if the current task is equal to the key task, delete it
+			if (taskList.get(i) == task) {
+				this.taskList.remove(i);
 			}
-			
-			//otherwise, end it after
-			else {
-				taskList.add(1,task);
-			}
-    	}
-    	
-    	//if there is more than one task in the list
-    	else {
-    		
-    		//boolean saying that the new task has been stored
-    		boolean isStored = false;
-    		
-    		//iterate through task list
-    		for( int i = 0; i < taskList.size()-1; i++) {
-    			
-    			//look at each pair of tasks in the task list
+		}
+	}
 
-    			//first Task
-    			TaskActivity firstTask = taskList.get(i);
-    			//second Task
-    			TaskActivity secondTask = taskList.get(i+1);
-    			    			
-    			//first task's start and end time
-    			double firstStart = firstTask.getStartTime();
-    			double firstEnd =  firstStart + firstTask.getDuration();
+	public void updateTask(TaskActivity task) {
 
-    	
-    			//second task's start and end time
-    			double secondStart = secondTask.getStartTime();
-    			double secondEnd = secondStart + secondTask.getDuration();
-    			
-    			
-    			//if it starts and ends before the first task, add it before the first
-    			if(newStart < firstStart && newEnd <= firstStart) {
-    				taskList.add(0, task);
-    				isStored = true;
-    			}
-    			
-    			// if the new task starts after the first task and ends before the second task, add it in between
-    			if(newStart > firstEnd && newEnd <= secondStart) {
-    				taskList.add(i + 1, task);
-    				isStored = true;
-    			}
-    		
-    		}
-    		
-    		
-    		
-    		//after we have finished going through each pair of tasks
-    		//if the task hasn't been added yet, then that means it should be at the end of the list
-    		
-    		if(!isStored) {
-    			taskList.add(taskList.size()-1, task);
-    		}
-    		
-    		
-    	}
-    }
+	}
 
-    public void deleteTask(TaskActivity task){
-        
-    	//iterate through task list
-    	for (int i = 0; i < this.taskList.size(); i++) {
-    		
-    		//if the current task is equal to the key task, delete it
-    		if(taskList.get(i) == task) {
-    			this.taskList.remove(i);
-    		}
-    	}
-    }
-    public void updateTask(TaskActivity task){
-        
-    }
-    
-    public ArrayList<TaskActivity> getTaskList(){
-    	return this.taskList;
-    }
-    
+	public ArrayList<TaskActivity> getTaskList() {
+		return this.taskList;
+	}
+
 }

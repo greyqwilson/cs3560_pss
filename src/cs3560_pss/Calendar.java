@@ -220,8 +220,8 @@ public class Calendar {
 
 	}
 
-	
-	//creates a task and inserts it into a schedule's tasklist, takes in task arguments
+	// creates a task and inserts it into a schedule's tasklist, takes in task
+	// arguments
 	public boolean createTask(String name, int startTime, int duration, int date, String typeString, int frequency,
 			int startDate, int endDate) {
 
@@ -259,11 +259,6 @@ public class Calendar {
 			// get the year, month, and day separately
 
 			int year = TaskActivity.getYear(task.getDate());
-//			int month = TaskActivity.getMonth(task.getDate());
-//			int day = TaskActivity.getDay(task.getDate());
-//
-//			// get the beginning schedule index of the month
-//			int beginningOfMonth = this.calculateMonthBeginning(month);
 
 			// create the year sub arraylist in the schedule list if it doesn't exist
 			// already
@@ -286,8 +281,6 @@ public class Calendar {
 
 			int endDayIndex = endMonthIndex + TaskActivity.getDay(endDate) - 1;
 
-			// get number of days from start date to end date
-			int numDaysFromStartToEnd = this.numDaysFromStartToEnd(startDate, endDate);
 
 			// make a counter of the days we are iterating through to add tasks
 
@@ -344,6 +337,11 @@ public class Calendar {
 									if (!checkForConflict(remainderTask)) {
 										nextSchedule.addTask(remainderTask);
 
+										// link the two tasks together
+
+										remainderTask.setFirstHalf(task);
+										task.setSecondHalf(remainderTask);
+
 									} else {
 										// otherwise there is a conflict
 										// return error, revert tasks
@@ -391,6 +389,10 @@ public class Calendar {
 									// check if there's a conflict for the remainder task
 									if (!checkForConflict(remainderTask)) {
 										nextSchedule.addTask(remainderTask);
+
+										// link the two tasks together
+										remainderTask.setFirstHalf(task);
+										task.setSecondHalf(remainderTask);
 
 									} else {
 										// otherwise there is a conflict
@@ -476,6 +478,10 @@ public class Calendar {
 						// check for conflict, if it doesn't conflict add the task
 						if (!checkForConflict(remainderTask)) {
 							nextSchedule.addTask(remainderTask);
+							// link the two tasks together
+
+							remainderTask.setFirstHalf(task);
+							task.setSecondHalf(remainderTask);
 						}
 
 						// otherwise, return error and revert tasks
@@ -521,6 +527,11 @@ public class Calendar {
 						// check for conflict, if it doesn't conflict add the task
 						if (!checkForConflict(remainderTask)) {
 							nextSchedule.addTask(remainderTask);
+
+							// link the two tasks together
+
+							remainderTask.setFirstHalf(task);
+							task.setSecondHalf(remainderTask);
 						}
 
 						// otherwise, return error and revert tasks
@@ -561,105 +572,27 @@ public class Calendar {
 
 			// if the task isn't recurring, then return an error
 			if (!targetTask.isRecurringTask()) {
-				// return error
+				// return error, revert tasks
 			}
 
-			// if the task is a recurring task, consider this edge case:
-			// it could be potentially targeting the remainder of a recurring task that has
-			// wrapped over to the next day
-			// we only need to consider the possibility of this edge case when the targeted
-			// task is the first task of a schedule
-			// if it is, then we take a look at the schedule before the current one
-			if (taskPositions[2] == 0) {
-
-				// take a look at schedule before this one to see if there's a wrapping
-				// recurring task
-
-				// if we are at the beginning of the year, then we need to look at the last
-				// schedule of the year before
-				if (taskPositions[1] == 0) {
-					// if we're in 2020, there is no last year, so we're fine
-
-					// otherwise, get the last task of the last schedule of the last year
-					if (TaskActivity.getYear(date) > 2020) {
-
-						int lastYearIndex = TaskActivity.getYear(date) - 2020 - 1;
-
-						ArrayList<TaskActivity> lastTaskList = this.scheduleList.get(lastYearIndex).get(364)
-								.getTaskList();
-
-						// if the task list is nonempty
-						if (lastTaskList.size() > 0) {
-							TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-							// get remainder of last day starting from last task start time
-
-							double remainderOfLastDay = 24 - lastTask.getStartTime();
-
-							// get duration
-
-							double lastTaskDuration = lastTask.getDuration();
-
-							// if the last task is recurring AND the duration is larger than the remainder
-							// of the day
-							// then we are targeting the second half of a recurring task, so display error
-
-							if (lastTask.isRecurringTask() && lastTaskDuration > remainderOfLastDay) {
-								// return error
-							}
-
-						}
-						// if it is empty, then there's no previous task to look at
-
-					}
-
-				}
-				// if we're not on the first day of the year, then we can just take a look at
-				// the schedule of the previous day
-				else {
-
-					// get the last day's task list
-					ArrayList<TaskActivity> lastTaskList = this.scheduleList.get(taskPositions[0])
-							.get(taskPositions[1] - 1).getTaskList();
-
-					// if the task list is nonempty, grab the last task
-					if (lastTaskList.size() > 0) {
-						TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-						// get remainder of last day starting from last task start time
-
-						double remainderOfLastDay = 24 - lastTask.getStartTime();
-
-						// get duration
-
-						double lastTaskDuration = lastTask.getDuration();
-
-						// if the last task is recurring AND the duration is larger than the remainder
-						// of the day
-						// then we are targeting the second half of a recurring task, so display error
-
-						if (lastTask.isRecurringTask() && lastTaskDuration > remainderOfLastDay) {
-							// return error
-						}
-					}
-
-				}
-
+			// if the target task is a recurring task, then we need to check whether its the
+			// second half of a recurring task
+			// if it is, display error and revert tasks
+			if (targetTask.getFirstHalf() != null) {
+				// display error
 			}
+
 			// At this point we have confirmed that we're not targeting just the second half
-			// of a
-			// recurring task
+			// of a recurring task
 
 			// we need to consider whether the targeted recurring task is wrapping into the
 			// next day or not
 
 			// if it isn't, then we just replace the current target with the anti task
 			if (task.getDuration() <= (24 - startTime)) {
-				// initiaze the sub array list year if it doesn't exist
-				this.createYear(TaskActivity.getYear(date));
 
 				// remove task from schedule
-				targetTaskList.remove(taskPositions[2]);
+				targetSchedule.deleteTask(targetTask);
 
 				// link anti task to recurring task removed
 				task.setRecurring((RecurringTaskActivity) targetTask);
@@ -671,109 +604,50 @@ public class Calendar {
 			// if it is, then we need to first remove the current target and replace it with
 			// the anti task with the same duration and time
 			else {
-				this.createYear(TaskActivity.getYear(date));
 
 				// remove task from schedule
-				targetTaskList.remove(taskPositions[2]);
-
+				targetSchedule.deleteTask(targetTask);
 				// link anti task to recurring task removed
 				task.setRecurring((RecurringTaskActivity) targetTask);
 
 				// add task to schedule
 				targetSchedule.addTask(task);
 
-				// then we go into the next day's schedule and remove the first task with
-				// replace it with an anti task of the same duration and time
+				// get the second half of the target task
 
-				// if we're at the end of the year, then we need to go into the next year, and
-				// remove the first task of the first day
+				TaskActivity secondHalf = targetTask.getSecondHalf();
 
-				if (taskPositions[1] == 364) {
+				// get its year, month, day
+				int secondDate = secondHalf.getDate();
 
-					// get the index of the next year
-					int nextYearIndex = taskPositions[0] + 1;
+				int secondYear = TaskActivity.getYear(secondDate);
+				int secondMonth = TaskActivity.getMonth(secondDate);
+				int secondDay = TaskActivity.getDay(secondDate);
 
-					// get the date of the first day of next year
-					int newDate = Integer.parseInt(String.valueOf(nextYearIndex + 2020) + "0101");
+				// get index of year, and day
+				int secondYearIndex = secondYear - 2020;
+				int secondBeginningMonth = this.calculateMonthBeginning(secondMonth);
+				int secondDayIndex = secondBeginningMonth + secondDay - 1;
 
-					// get the schedule of the first day of the next year
+				// get the second half's schedule
+				Schedule secondSchedule = this.scheduleList.get(secondYearIndex).get(secondDayIndex);
 
-					Schedule nextSchedule = this.scheduleList.get(nextYearIndex).get(0);
+				// create anti task with remainder on the next day
+				AntiTaskActivity remainderTask = new AntiTaskActivity(name, typeString, 0, secondHalf.getDuration(),
+						secondDate);
 
-					// get task list of next schedule
-					ArrayList<TaskActivity> nextTaskList = nextSchedule.getTaskList();
+				// link two anti task halves to each other
+				remainderTask.setFirstHalf(task);
+				task.setSecondHalf(remainderTask);
 
-					// store reference to second half of recurring task to be removed
-					RecurringTaskActivity secondRecurringHalf = (RecurringTaskActivity) nextTaskList.get(0);
-					// remove the first task
-					nextTaskList.remove(0);
+				// link the second anti task to the second half of the recurring task
+				remainderTask.setRecurring((RecurringTaskActivity) secondHalf);
 
-					// create new anti task with the remainder of the duration
-					double remainderDuration = task.getDuration() - (24 - startTime);
+				// remove the second recurring half
+				secondSchedule.deleteTask(secondHalf);
 
-					// since it's wrapping into the next day, start time is 0
-					// and it will have a new date
-					AntiTaskActivity remainderTask = new AntiTaskActivity(name, typeString, 0, remainderDuration,
-							newDate);
-
-					// link the new anti task to the remainder recurring talk
-					remainderTask.setRecurring(secondRecurringHalf);
-
-					// add it to the schedule
-					nextSchedule.addTask(remainderTask);
-				}
-				// otherwise, we just go to the next day
-
-				else {
-
-					// year is still the same
-					// month and day of of month may be different
-
-					// calculate new month from number of days from beginning of year of the next
-					// date (based the method on num of days from 1-365 so need to add 2 to the
-					// current day index)
-					int newMonth = this.calculateMonthFromDays(taskPositions[1] + 2);
-
-					// calculate new day from number of days from beginning of year of the next date
-					// (add 2 for same reason)
-					int newDayOfMonth = this.calculateDayOfMonthFromNumDays(taskPositions[1] + 2);
-
-					// format them into strings, add a 0 to the number if they are single digits
-
-					String newMonthString = (newMonth < 10 ? "0" : "") + String.valueOf(newMonth);
-					String newDayOfMonthString = (newDayOfMonth < 10 ? "0" : "") + String.valueOf(newDayOfMonth);
-					String currentYearString = String.valueOf(taskPositions[0] + 2020);
-
-					int newDate = Integer.parseInt(currentYearString + newMonthString + newDayOfMonthString);
-
-					// get remaining duration, this still also be the new end time since the start
-					// time will be 0
-					double durationRemainder = duration - (24 - startTime);
-
-					// since it's wrapping into the next day, start time is 0
-					// and it will have a new date
-					AntiTaskActivity remainderTask = new AntiTaskActivity(name, typeString, 0, durationRemainder,
-							newDate);
-
-					// get the next day's schedule
-
-					Schedule nextSchedule = this.scheduleList.get(taskPositions[0]).get(taskPositions[1] + 1);
-
-					// get the next day's taskList
-					ArrayList<TaskActivity> nextTaskList = nextSchedule.getTaskList();
-
-					// store reference to second half of recurring task to be removed
-					RecurringTaskActivity secondRecurringHalf = (RecurringTaskActivity) nextTaskList.get(0);
-
-					// link the new anti task to the remainder recurring talk
-					remainderTask.setRecurring(secondRecurringHalf);
-
-					// remove the first task
-					nextTaskList.remove(0);
-
-					// add the new remainder task
-					nextSchedule.addTask(remainderTask);
-				}
+				// add the second anti half to the schedule
+				secondSchedule.addTask(remainderTask);
 
 			}
 
@@ -782,121 +656,51 @@ public class Calendar {
 		return false;
 	}
 
-	//takes in object reference to task, deletes task based on its type
+	// takes in object reference to task, deletes task based on its type
 	public boolean deleteTask(TaskActivity task) {
+
+		TaskActivity removeTask = task;
+
+		// if the input task is the second half of a task, then update the reference to
+		// the first half
+		if (removeTask.getFirstHalf() != null) {
+			removeTask = removeTask.getFirstHalf();
+		}
 
 		boolean isRecurring = task.isRecurringTask();
 		boolean isAnti = task.isAntiTask();
 		boolean isTransient = task.isTransientTask();
 
+		/*-----this is used only for anti and transient tasks------------------*/
+		// get year, month, day of task
+		int year = TaskActivity.getYear(removeTask.getDate());
+		int month = TaskActivity.getMonth(removeTask.getDate());
+		int day = TaskActivity.getDay(removeTask.getDate());
+
+		// get year index, day index
+
+		int yearIndex = year - 2020;
+		int beginningOfMonth = this.calculateMonthBeginning(month);
+		int dayIndex = beginningOfMonth + day - 1;
+
+		// find the schedule of the task
+		Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
+
+		/*----------------------------------------------------------------------*/
+
 		// if it's recurring, then we need to remove all the iterations
 		if (isRecurring) {
-
-			RecurringTaskActivity removeTask = (RecurringTaskActivity) task;
 
 			// first we need to make sure that the recurring task we've been passed is the
 			// second half of a
 			// recurring task or not
 
 			// if it is, then we need to change the reference to its first task half
-
-			// get positions of current task
-			Integer[] taskPositions = this.searchTaskPositionByTime(removeTask.getDate(), removeTask.getStartTime(),
-					removeTask.getDuration());
-
-			// get the schedule, task list of the task to be removed
-			Schedule targetSchedule = this.scheduleList.get(taskPositions[0]).get(taskPositions[1]);
-			ArrayList<TaskActivity> targetTaskList = targetSchedule.getTaskList();
-
-			// we only need to consider the possibility of the current task being the second
-			// half if the
-			// task is the first task of a schedule
-			// if it is, then we take a look at the schedule before the current one
-			if (taskPositions[2] == 0) {
-
-				// take a look at schedule before this one to see if there's a wrapping
-				// recurring task
-
-				// if we are at the beginning of the year, then we need to look at the last
-				// schedule of the year before
-				if (taskPositions[1] == 0) {
-					// if we're in 2020, there is no last year, so we're fine
-
-					// otherwise, get the last task of the last schedule of the last year
-					if (TaskActivity.getYear(removeTask.getDate()) > 2020) {
-
-						int lastYearIndex = TaskActivity.getYear(removeTask.getDate()) - 2020 - 1;
-
-						ArrayList<TaskActivity> lastTaskList = this.scheduleList.get(lastYearIndex).get(364)
-								.getTaskList();
-
-						// if the task list is nonempty
-						if (lastTaskList.size() > 0) {
-
-							TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-							// get remainder of last day starting from last task start time
-
-							double remainderOfLastDay = 24 - lastTask.getStartTime();
-
-							// get duration
-
-							double lastTaskDuration = lastTask.getDuration();
-
-							// if the last task is recurring AND the duration is larger than the remainder
-							// of the day
-							// then the task that was passed into the delete method was the second half
-							// so set the task to be removed's reference to the first half
-
-							if (lastTask.isRecurringTask() && lastTaskDuration > remainderOfLastDay) {
-								removeTask = (RecurringTaskActivity) lastTask;
-							}
-
-						}
-						// if the list is empty, then there's no previous task to look at
-
-					}
-
-				}
-				// if we're not on the first day of the year, then we can just take a look at
-				// the schedule of the previous day
-				else {
-
-					// get the last day's task list
-					ArrayList<TaskActivity> lastTaskList = this.scheduleList.get(taskPositions[0])
-							.get(taskPositions[1] - 1).getTaskList();
-
-					// if the task list is nonempty, grab the last task
-					if (lastTaskList.size() > 0) {
-						TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-						// get remainder of last day starting from last task start time
-
-						double remainderOfLastDay = 24 - lastTask.getStartTime();
-
-						// get duration
-
-						double lastTaskDuration = lastTask.getDuration();
-
-						// if the last task is recurring AND the duration is larger than the remainder
-						// of the day
-						// then the task that was passed into the delete method was the second half
-						// so set the task to be removed's reference to the first half
-
-						if (lastTask.isRecurringTask() && lastTaskDuration > remainderOfLastDay) {
-							removeTask = (RecurringTaskActivity) lastTask;
-						}
-					}
-
-				}
-
-			}
-
 			// get frequency
-			int frequency = removeTask.getFrequency();
+			int frequency = ((RecurringTaskActivity) removeTask).getFrequency();
 
-			int startDate = removeTask.getStartDate();
-			int endDate = removeTask.getEndDate();
+			int startDate = ((RecurringTaskActivity) removeTask).getStartDate();
+			int endDate = ((RecurringTaskActivity) removeTask).getEndDate();
 
 			// get year, month, day of start date
 			int startYear = TaskActivity.getYear(startDate);
@@ -923,7 +727,7 @@ public class Calendar {
 
 			int endMonthIndex = this.calculateMonthBeginning(endMonth);
 
-			int endDayIndex = endMonthIndex + endMonth - 1;
+			int endDayIndex = endMonthIndex + endDay - 1;
 
 			// make a counter of the days we are iterating through to remove recurring task
 			// iterations
@@ -944,9 +748,9 @@ public class Calendar {
 					if (currentNumDays % frequency == 0) {
 
 						// get the current Schedule
-						Schedule schedule = scheduleList.get(currentYearIndex).get(currentDay);
+						Schedule currentSchedule = scheduleList.get(currentYearIndex).get(currentDay);
 						// get task list
-						ArrayList<TaskActivity> taskList = schedule.getTaskList();
+						ArrayList<TaskActivity> recurringTaskList = currentSchedule.getTaskList();
 
 						// search for a Recurring Task with the same name, type, start time duration,
 						// and its position
@@ -956,11 +760,11 @@ public class Calendar {
 						int antiPosition = -1;
 
 						// start search
-						for (int i = 0; i < taskList.size(); i++) {
+						for (int i = 0; i < recurringTaskList.size(); i++) {
 
-							TaskActivity currentTask = taskList.get(i);
+							TaskActivity currentTask = recurringTaskList.get(i);
 
-							// if current task matches recurring search, record reference and position
+							// if current task matches recurring search, record position
 							if (currentTask.isRecurringTask() && currentTask.getName() == removeTask.getName()
 									&& currentTask.getType() == removeTask.getType()
 									&& currentTask.getStartTime() == removeTask.getStartTime()
@@ -970,7 +774,7 @@ public class Calendar {
 
 							}
 
-							// if current task matches anti search, record reference and position
+							// if current task matches anti search, record position
 
 							if (currentTask.isAntiTask() && currentTask.getStartTime() == removeTask.getStartTime()
 									&& currentTask.getDuration() == removeTask.getDuration()) {
@@ -981,11 +785,21 @@ public class Calendar {
 
 						}
 
-						// remove the recurring task or anti task, whichever exists
+						// get the references to the current recurring or anti task, and remove them
+						// from list
+						TaskActivity currentRecurring = null;
+						TaskActivity currentAnti = null;
+
+						if (recurringPosition > -1) {
+							currentRecurring = recurringTaskList.get(recurringPosition);
+							recurringTaskList.remove(recurringPosition);
+
+						}
+
 						if (antiPosition > -1) {
-							taskList.remove(antiPosition);
-						} else if (recurringPosition > -1) {
-							taskList.remove(recurringPosition);
+							currentAnti = recurringTaskList.get(antiPosition);
+							recurringTaskList.remove(antiPosition);
+
 						}
 
 						// check if the task wraps to the next day or not
@@ -993,32 +807,34 @@ public class Calendar {
 
 						if (removeTask.getDuration() > (24 - removeTask.getStartTime())) {
 
-							// if we're on the last day of the year then we need to go to the next year's
-							// first day
-							if (currentDay == 364) {
+							// get the second half of the current task
 
-								// get next year's first day's tasklist
+							TaskActivity secondHalf = null;
 
-								ArrayList<TaskActivity> nextTaskList = this.scheduleList.get(currentYearIndex + 1)
-										.get(0).getTaskList();
-
-								if (nextTaskList.size() > 0) {
-									nextTaskList.remove(0);
-								}
-
+							if (recurringPosition > -1) {
+								secondHalf = currentRecurring.getSecondHalf();
+							}
+							if (antiPosition > -1) {
+								secondHalf = currentAnti.getSecondHalf();
 							}
 
-							// otherwise, we can just go to the next day and remove the first task
-							else {
-								// get next day's tasklist
+							// get its year, month, day
+							int secondDate = secondHalf.getDate();
 
-								ArrayList<TaskActivity> nextTaskList = this.scheduleList.get(currentYearIndex)
-										.get(currentDay + 1).getTaskList();
-								if (nextTaskList.size() > 0) {
+							int secondYear = TaskActivity.getYear(secondDate);
+							int secondMonth = TaskActivity.getMonth(secondDate);
+							int secondDay = TaskActivity.getDay(secondDate);
 
-									nextTaskList.remove(0);
-								}
-							}
+							// get index of year, and day
+							int secondYearIndex = secondYear - 2020;
+							int secondBeginningMonth = this.calculateMonthBeginning(secondMonth);
+							int secondDayIndex = secondBeginningMonth + secondDay - 1;
+
+							// get the second half's schedule
+							Schedule secondSchedule = this.scheduleList.get(secondYearIndex).get(secondDayIndex);
+
+							// remove the second half
+							secondSchedule.deleteTask(secondHalf);
 
 						}
 
@@ -1031,306 +847,98 @@ public class Calendar {
 		}
 		// if it's anti task, then we need to remove the anti task and add back in the
 		// recurring task it replaced
-		if (isAnti) {
 
-			AntiTaskActivity removeTask = (AntiTaskActivity) task;
+		// if transient, then we just need to remove it
+		if (isAnti || isTransient) {
 
-			// get year, month, day of task
+			// remove the task from the schedule
+			schedule.deleteTask(removeTask);
 
-			int year = TaskActivity.getYear(removeTask.getDate());
-			int month = TaskActivity.getMonth(removeTask.getDate());
-			int day = TaskActivity.getDay(removeTask.getDate());
+			// if the task is anti, get the recurring task it replaced
+			RecurringTaskActivity recurringLink = null;
 
-			// get year index, day index
+			if (isAnti) {
+				recurringLink = ((AntiTaskActivity) removeTask).getRecurring();
 
-			int yearIndex = year - 2020;
-			int beginningOfMonth = this.calculateMonthBeginning(month);
-			int dayIndex = beginningOfMonth + day - 1;
+				// check for conflict, if there's a conflict then there was some transient tasks
+				// overlapping
+				// with the anti task, revert changes
 
-			// find the schedule of the task
-			Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
-
-			// get the task list of the current task
-			ArrayList<TaskActivity> taskList = schedule.getTaskList();
-
-			// check if the current task is the second half of a anti task or not
-			// if it is, we need to update the task reference to the first half
-
-			// the second half of a task, if it's there, is the first task of the task list
-			if (taskList.get(0) == removeTask) {
-
-				// take a look at the day before and see if the last task is the first half
-
-				ArrayList<TaskActivity> lastTaskList;
-
-				// if we're at the beginning of the year, look at the last day of last year
-				// if the current year is 2020 then we don't need to look
-				if (year > 2020) {
-
-					int lastYearIndex = yearIndex - 1;
-
-					// get last day of last year's last task
-
-					lastTaskList = this.scheduleList.get(lastYearIndex).get(364).getTaskList();
-
-				}
-
-				// otherwise just look at the day before to look for potential first half
-				else {
-					// get last day's last task
-
-					lastTaskList = this.scheduleList.get(yearIndex).get(dayIndex - 1).getTaskList();
-
-				}
-
-				if (lastTaskList.size() > 0) {
-
-					TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-					// if the last task is an anti task and the duration wraps to the next day,
-					// then its the first half
-					if (lastTask.isAntiTask() && lastTask.getDuration() > (24 - lastTask.getStartTime())) {
-
-						// update task reference
-						removeTask = (AntiTaskActivity) lastTask;
-						// update the dates and indexes, schedule, taskList
-						year = TaskActivity.getYear(removeTask.getDate());
-						month = TaskActivity.getMonth(removeTask.getDate());
-						day = TaskActivity.getDay(removeTask.getDate());
-						yearIndex = year - 2020;
-						beginningOfMonth = this.calculateMonthBeginning(month);
-						dayIndex = beginningOfMonth + day - 1;
-						schedule = this.scheduleList.get(yearIndex).get(dayIndex);
-						taskList = schedule.getTaskList();
-					}
-				}
-
-			}
-
-			// after affirming that we have the first half of the task
-
-			// iterate through tasklist, remove task
-			// search based on if task is anti task activity, has the same start time,
-			// duration, name, type
-
-			for (int i = 0; i < taskList.size(); i++) {
-
-				TaskActivity currentTask = taskList.get(i);
-
-				// if current task matches search, remove it
-				if (currentTask.isAntiTask() && currentTask.getStartTime() == removeTask.getStartTime()
-						&& currentTask.getDuration() == removeTask.getDuration()
-						&& currentTask.getName() == removeTask.getName()
-						&& currentTask.getType() == removeTask.getType()) {
-					taskList.remove(i);
-				}
-			}
-
-			// get the recurring activity linked to the anti task
-
-			RecurringTaskActivity recurringLink = removeTask.getRecurring();
-
-			// check for conflict, if there's a conflict then there was some transient tasks
-			// overlapping
-			// with the anti task, revert changes
-
-			// otherwise, add the recurring task back in its place
-			if (!checkForConflict(recurringLink)) {
-				schedule.addTask(recurringLink);
-			} else {
-				// display error, revert changes
-			}
-
-			// if the anti task wraps to the next day, then we also need to remove that
-			// remainder task
-			if (removeTask.getDuration() > (24 - removeTask.getStartTime())) {
-
-				Schedule nextSchedule;
-
-				// if the current day is the last day of the year, look to next year's first day
-				if (month == 12 && day == 31) {
-
-					// get the schedule of the first day of next year
-
-					nextSchedule = this.scheduleList.get(yearIndex + 1).get(0);
-
-				}
-				// otherwise we're at any other day in the year, so just check the next day
-				else {
-					// get the schedule of the next day
-
-					nextSchedule = this.scheduleList.get(yearIndex).get(dayIndex + 1);
-
-				}
-
-				// get its tasklist
-
-				ArrayList<TaskActivity> nextTaskList = nextSchedule.getTaskList();
-
-				// get the first task
-				AntiTaskActivity secondHalfAnti = (AntiTaskActivity) nextTaskList.get(0);
-
-				// get the half of the recurring task activity that it's linked to
-				RecurringTaskActivity secondHalfRecur = secondHalfAnti.getRecurring();
-
-				// remove the first task
-				nextTaskList.remove(0);
-
-				// add the recurring task half back if there isn't a conflict
-				// if there is a conflict then there were some overlapping transient tasks, so
-				// display error and revert changes
-
-				if (!checkForConflict(secondHalfRecur)) {
-					nextSchedule.addTask(secondHalfRecur);
+				// otherwise, add the recurring task back in its place
+				if (!checkForConflict(recurringLink)) {
+					schedule.addTask(recurringLink);
 				} else {
 					// display error, revert changes
 				}
 			}
 
-		}
-		// if it's transient, then we need to remove it
-		if (isTransient) {
-			TransientTaskActivity removeTask = (TransientTaskActivity) task;
-
-			// get year, month, day of task
-
-			int year = TaskActivity.getYear(removeTask.getDate());
-			int month = TaskActivity.getMonth(removeTask.getDate());
-			int day = TaskActivity.getDay(removeTask.getDate());
-
-			// get year index, day index
-
-			int yearIndex = year - 2020;
-			int beginningOfMonth = this.calculateMonthBeginning(month);
-			int dayIndex = beginningOfMonth + day - 1;
-
-			// find the schedule of the task
-			Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
-
-			// get the task list of the current task
-			ArrayList<TaskActivity> taskList = schedule.getTaskList();
-
-			// check if the current task is the second half of a anti task or not
-			// if it is, we need to update the task reference to the first half
-
-			// the second half of a task, if it's there, is the first task of the task list
-			if (taskList.get(0) == removeTask) {
-
-				// take a look at the day before and see if the last task is the first half
-
-				ArrayList<TaskActivity> lastTaskList;
-				// if we're at the beginning of the year, look at the last day of last year
-				// if the current year is 2020 then we don't need to look
-				if (year > 2020) {
-
-					int lastYearIndex = yearIndex - 1;
-
-					// get last day of last year's last task
-
-				 lastTaskList = this.scheduleList.get(lastYearIndex).get(364).getTaskList();
-
-
-
-				}
-
-				// otherwise just look at the day before to look for potential first half
-				else {
-					// get last day's last task
-
-					 lastTaskList = this.scheduleList.get(yearIndex).get(dayIndex - 1).getTaskList();
-
-				
-				}
-				if (lastTaskList.size() > 0) {
-					TaskActivity lastTask = lastTaskList.get(lastTaskList.size() - 1);
-
-					// if the last task is an anti task and the duration wraps to the next day,
-					// then its the first half
-					if (lastTask.isAntiTask() && lastTask.getDuration() > (24 - lastTask.getStartTime())) {
-
-						// update task reference
-						removeTask = (TransientTaskActivity) lastTask;
-						// update the dates and indexes, schedule, taskList
-						year = TaskActivity.getYear(removeTask.getDate());
-						month = TaskActivity.getMonth(removeTask.getDate());
-						day = TaskActivity.getDay(removeTask.getDate());
-						yearIndex = year - 2020;
-						beginningOfMonth = this.calculateMonthBeginning(month);
-						dayIndex = beginningOfMonth + day - 1;
-						schedule = this.scheduleList.get(yearIndex).get(dayIndex);
-						taskList = schedule.getTaskList();
-					}
-				}
-			}
-
-			// after affirming that we have the first half of the task
-			// iterate through tasklist, remove task
-			// search based on if task is transient task, has the same start time,
-			// duration, name, type
-			for (int i = 0; i < taskList.size(); i++) {
-
-				TaskActivity currentTask = taskList.get(i);
-
-				// if current task matches search, remove it
-				if (currentTask.isTransientTask() && currentTask.getStartTime() == removeTask.getStartTime()
-						&& currentTask.getDuration() == removeTask.getDuration()
-						&& currentTask.getName() == removeTask.getName()
-						&& currentTask.getType() == removeTask.getType()) {
-					taskList.remove(i);
-				}
-			}
-
-			// if the task wraps to the next day, then we need to go to the next schedule to
-			// remove the second half
-
+			// if task wraps to the next day, then we also need to remove that
+			// remainder task
 			if (removeTask.getDuration() > (24 - removeTask.getStartTime())) {
 
-				Schedule nextSchedule;
-				// if we're at the end of the year we need to go to the first day of the next
-				// year
-				if (month == 12 && day == 31) {
+				// get the second half of the task
 
-					// get the schedule of the first day of next year
-					nextSchedule = this.scheduleList.get(yearIndex + 1).get(0);
+				TaskActivity secondHalf = removeTask.getSecondHalf();
 
+				// get its year, month, day
+				int secondDate = secondHalf.getDate();
+
+				int secondYear = TaskActivity.getYear(secondDate);
+				int secondMonth = TaskActivity.getMonth(secondDate);
+				int secondDay = TaskActivity.getDay(secondDate);
+
+				// get index of year, and day
+				int secondYearIndex = secondYear - 2020;
+				int secondBeginningMonth = this.calculateMonthBeginning(secondMonth);
+				int secondDayIndex = secondBeginningMonth + secondDay - 1;
+
+				// get the second half's schedule
+				Schedule secondSchedule = this.scheduleList.get(secondYearIndex).get(secondDayIndex);
+
+				// remove second half from second schedule
+				secondSchedule.deleteTask(secondHalf);
+
+				// if the current task is an anti task, then we need to put back in the
+				// recurring half as well
+				TaskActivity secondRecurring;
+				if (isAnti) {
+					secondRecurring = recurringLink.getSecondHalf();
+					// check for conflict, if there's a conflict then there was some transient tasks
+					// overlapping
+					// with the anti task, revert changes
+
+					// otherwise, add the recurring task back in its place
+					if (!checkForConflict(secondRecurring)) {
+						schedule.addTask(secondRecurring);
+					} else {
+						// display error, revert changes
+					}
 				}
 
-				// otherwise just go to the next day and remove the first task
-				else {
-					// get the schedule of the first day of next year
-					nextSchedule = this.scheduleList.get(yearIndex).get(dayIndex + 1);
-				}
-
-				// get its tasklist
-				ArrayList<TaskActivity> nextTaskList = nextSchedule.getTaskList();
-
-				// remove the first task
-				nextTaskList.remove(0);
 			}
 
 		}
+
 		return false;
 
 	}
 
-	
-	//searches for task based on name
+	// searches for task based on name
 	public TaskActivity searchTask(String name) {
 		for (ArrayList<Schedule> year : this.scheduleList) {
-			
-			for( Schedule day : year) {
-				
-				for(TaskActivity task : day.getTaskList()) {
-					
-					if(task.getName() == name) {
+
+			for (Schedule day : year) {
+
+				for (TaskActivity task : day.getTaskList()) {
+
+					if (task.getName() == name) {
 						return task;
 					}
 				}
 			}
 		}
-		
+
 		return null;
-			
 
 	}
 
@@ -1389,195 +997,174 @@ public class Calendar {
 
 	}
 
-	//returns arraylist for a day
+	// returns arraylist for a day
 	public ArrayList<TaskActivity> getTasksForDay(int date) {
-		
-		
-		//get year, month, day
+
+		// get year, month, day
 		int year = TaskActivity.getYear(date);
 		int month = TaskActivity.getMonth(date);
 		int day = TaskActivity.getDay(date);
-		
-		//if the year is below 2020, return null
-		if(year < 2020) {
+
+		// if the year is below 2020, return null
+		if (year < 2020) {
 			return null;
 		}
-		
-		
-		//get index of year and day
-		int yearIndex  = year - 2020;
+
+		// get index of year and day
+		int yearIndex = year - 2020;
 		int beginningOfMonth = this.calculateMonthBeginning(month);
-		int dayIndex = beginningOfMonth + day -1;
-		
-		//this is for in case they reference a year after 2020 but it doesn't exist
+		int dayIndex = beginningOfMonth + day - 1;
+
+		// this is for in case they reference a year after 2020 but it doesn't exist
 		this.createYear(year);
-		
-		//return the task list of the day
+
+		// return the task list of the day
 		return this.scheduleList.get(yearIndex).get(dayIndex).getTaskList();
-		
-		
+
 	}
 
-	//returns arraylist of arraylists containing tasks for a week
+	// returns arraylist of arraylists containing tasks for a week
 	public ArrayList<ArrayList<TaskActivity>> getTasksForWeek(int date) {
 		return null;
-	
 
-				
-				
 	}
 
-	//returns arraylist of arraylists containing tasks for a month
+	// returns arraylist of arraylists containing tasks for a month
 	public ArrayList<ArrayList<TaskActivity>> getTasksForMonth(int date) {
-		//get year, month, day
+		// get year, month, day
 		int year = TaskActivity.getYear(date);
 		int month = TaskActivity.getMonth(date);
-		int day = TaskActivity.getDay(date);
-		
-		//if the year is below 2020, return null
-		if(year < 2020) {
+
+		// if the year is below 2020, return null
+		if (year < 2020) {
 			return null;
 		}
-		
-		
-		//get index of year and beginning of month
-		int yearIndex  = year - 2020;
+
+		// get index of year and beginning of month
+		int yearIndex = year - 2020;
 		int beginningOfMonth = this.calculateMonthBeginning(month);
-		
-		
-		//num of days in each month
+
+		// num of days in each month
 		int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-		
-		
-		//array list of taskLists in month
+
+		// array list of taskLists in month
 		ArrayList<ArrayList<TaskActivity>> taskListsOfMonth = new ArrayList<ArrayList<TaskActivity>>();
-		
-		//iterate from Schedules from beginning of month to end of month
-		
-		for(int i = 0; i < monthDays[month-1]; i++) {
-			
+
+		// iterate from Schedules from beginning of month to end of month
+
+		for (int i = 0; i < monthDays[month - 1]; i++) {
+
 			taskListsOfMonth.add(this.scheduleList.get(yearIndex).get(beginningOfMonth + i).getTaskList());
 		}
-		
+
 		return taskListsOfMonth;
 	}
-	
 
-	
-	//? is this needed?
+	// ? is this needed?
 	public void getTasks() {
 	}
 
-	
 	public Schedule returnScheduleFile(int date) {
 		return null;
 	}
 
-	//checks for conflict if we were to add the input task
+	// checks for conflict if we were to add the input task
 	public boolean checkForConflict(TaskActivity task) {
 		boolean isRecurring = task.isRecurringTask();
 		boolean isAnti = task.isAntiTask();
 		boolean isTransient = task.isTransientTask();
-		
-		//get date 
+
+		// get date
 		int date = task.getDate();
-		
-		//get year, month, day
+
+		// get year, month, day
 		int year = TaskActivity.getYear(date);
 		int month = TaskActivity.getMonth(date);
 		int day = TaskActivity.getDay(date);
-		
-		//get task's start time and duration, and end time based on duration
-		
+
+		// get task's start time and duration, and end time based on duration
+
 		double taskDuration = task.getDuration();
 		double taskStart = task.getStartTime();
 		double taskEnd = taskStart + taskDuration;
-	
-		
-		
-		//get index of year and day
-		int yearIndex  = year - 2020;
+
+		// get index of year and day
+		int yearIndex = year - 2020;
 		int beginningOfMonth = this.calculateMonthBeginning(month);
-		int dayIndex = beginningOfMonth + day -1;
-		
-		//get the tasklist of the schedule of the day
+		int dayIndex = beginningOfMonth + day - 1;
+
+		// get the tasklist of the schedule of the day
 		Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
-		
+
 		ArrayList<TaskActivity> taskList = schedule.getTaskList();
-		
-		//recurring tasks can't overlap with other tasks
-		//anti tasks can technically overlap with transient tasks,
-		//but they are added right after a recurring task is removed,
-		//so there shouldn't be any overlapping regardless
-		if(isRecurring || isAnti) {
-			
-			//iterate through tasklist
-			for(int i = 0; i < taskList.size(); i++) {
-				
-				//get start and end times of each task
+
+		// recurring tasks can't overlap with other tasks
+		// anti tasks can technically overlap with transient tasks,
+		// but they are added right after a recurring task is removed,
+		// so there shouldn't be any overlapping regardless
+		if (isRecurring || isAnti) {
+
+			// iterate through tasklist
+			for (int i = 0; i < taskList.size(); i++) {
+
+				// get start and end times of each task
 				TaskActivity currentTask = taskList.get(i);
 				double currentStart = currentTask.getStartTime();
 				double currentEnd = currentStart + currentTask.getDuration();
-				
-				//if the task to be added's start time or end time is in between
+
+				// if the task to be added's start time or end time is in between
 				// any of the tasks start time and end time, there's a conflict
-				
-				//the task can start when another tasks ends,
-				//or end when another tasks starts
-				if((taskStart >= currentStart && taskStart < currentEnd) ||
-					(taskEnd > currentStart && taskEnd <= currentEnd)
-						) {
+
+				// the task can start when another tasks ends,
+				// or end when another tasks starts
+				if ((taskStart >= currentStart && taskStart < currentEnd)
+						|| (taskEnd > currentStart && taskEnd <= currentEnd)) {
 					return true;
 				}
-				
+
 			}
-			
-			
+
 		}
-		
-		//can overlap with anti tasks
-		else if(isTransient) {
-			
-			//iterate through tasklist
-			for(int i = 0; i < taskList.size(); i++) {
-				
-				//get start and end times of each task
+
+		// can overlap with anti tasks
+		else if (isTransient) {
+
+			// iterate through tasklist
+			for (int i = 0; i < taskList.size(); i++) {
+
+				// get start and end times of each task
 				TaskActivity currentTask = taskList.get(i);
 				double currentStart = currentTask.getStartTime();
 				double currentEnd = currentStart + currentTask.getDuration();
-				
-				//if current task is transient or recurring,
-				//and the task to be added's start time or end time is in between
+
+				// if current task is transient or recurring,
+				// and the task to be added's start time or end time is in between
 				// any of the tasks start time and end time, there's a conflict
-				
-				//the task can start when another tasks ends,
-				//or end when another tasks starts
-				if( (currentTask.isRecurringTask() || currentTask.isTransientTask()) && 
-					(taskStart >= currentStart && taskStart < currentEnd) ||
-					(taskEnd > currentStart && taskEnd <= currentEnd)
-						) {
+
+				// the task can start when another tasks ends,
+				// or end when another tasks starts
+				if ((currentTask.isRecurringTask() || currentTask.isTransientTask())
+						&& (taskStart >= currentStart && taskStart < currentEnd)
+						|| (taskEnd > currentStart && taskEnd <= currentEnd)) {
 					return true;
 				}
-				
-				//don't need to consider anti tasks since we can overlap, just need to consider
-				//recurring/transient tasks
-			
-				
+
+				// don't need to consider anti tasks since we can overlap, just need to consider
+				// recurring/transient tasks
+
 			}
 		}
-		
-			
-		//we have finished looking through the tasks in the task list and 
-		//have determined no conflict
+
+		// we have finished looking through the tasks in the task list and
+		// have determined no conflict
 		return false;
 
 	}
 
-	//returns schedule list
+	// returns schedule list
 	public ArrayList<ArrayList<Schedule>> getScheduleList() {
 		return scheduleList;
 	}
-
 
 	public Display getDisplay() {
 		return display;

@@ -7,6 +7,8 @@ public class TaskActivity{
     private double startTime;
     private double duration;
     private int date;
+    private TaskActivity firstHalf = null;
+    private TaskActivity secondHalf = null;
     
     private String[] recurringTaskTypes = 
 		{
@@ -109,8 +111,23 @@ public class TaskActivity{
     	return false;
     }
 
+    
+    public void setFirstHalf(TaskActivity firstHalf) {
+    	this.firstHalf = firstHalf;
+    }
+    
+    public void setSecondHalf(TaskActivity secondHalf) {
+    	this.secondHalf = secondHalf;
+    }
 
 
+    public TaskActivity getFirstHalf() {
+    	return this.firstHalf;
+    }
+    
+    public TaskActivity getSecondHalf() {
+    	return this.secondHalf;
+    }
 
 
     
