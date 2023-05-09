@@ -58,17 +58,13 @@ public class Display{
       Schedule[] weekSchedule;
       weekSchedule = calendar.getTasksForWeek(currentWeek);
 
-      TaskActivity[] tasks;
-      for (int i=0; i<7; i++) {
-        tasks[i] = calendar.getTasksForDay(i);
-        printTaskList(tasks);
-      }
+      String weekString = formatWeekTasks(weekSchedule);
+      System.out.print(weekString);
+      
     }
     public void displayTasksforMonth(){
       Schedule[] monthSchedule = calendar.getTasksForMonth(currentMonth);
-      TaskActivity[] tasks;
-      for (int i=0; i<monthLength; i++){
-        tasks[i] = calendar.getTasksForDay(i);
+      formatMonthTasks(monthSchedule);
 
       }
     }
@@ -157,7 +153,6 @@ public class Display{
           headingLength[i] = heading.length();
           weekHeadingSb.append(heading);
           
-         
           if (tasks.size() > knownMaxTasks)
               knownMaxTasks = tasks.size();
 
@@ -165,8 +160,7 @@ public class Display{
           String startTime, endTime, title;
           for (int j=0; j<tasks.size() || j == MAXTASKSLISTED-1; j++){
               title = tasks.get(j).getName();
-              //startTime = String.valueOf(tasks.get(j).getStartTime());
-              //endTime = String.valueOf(tasks.get(j).getEndTime());
+              //Get j'th task of the day's end and start time
               startTime = numberTimeToString(tasks.get(j).getStartTime(), false);
               endTime = numberTimeToString(tasks.get(j).getStartTime(), false);
               
@@ -180,33 +174,125 @@ public class Display{
       }
       weekHeadingSb.append("*\n");
 
-      
-
       //Collate each line
-      for (int i=0; i<MAXTASKSLISTED && i < knownMaxTasks; i++){
+      for (int row=0; row<MAXTASKSLISTED && row < knownMaxTasks; row++){
           String taskLine;
           //For each column
           
-          for (int j=0; j<weekData.size(); j++){
-              ArrayList< String > scheduleData = weekData.get(j);
-              if (i < scheduleData.size()){
-                  if (j==0){
+          for (int col=0; col<weekData.size(); col++){
+              ArrayList< String > scheduleData = weekData.get(col);
+              if (row < scheduleData.size()){
+                  if (col==0){
                       weekHeadingSb.append("|");
                   }
-                  taskLine = scheduleData.get(i);
-                  taskLine = taskLine.concat(" ".repeat(headingLength[i]-taskLine.length() -1) + "|");
+                  taskLine = scheduleData.get(row);
+                  taskLine = taskLine.concat(" ".repeat(headingLength[row]-taskLine.length() -1) + "|");
                   weekHeadingSb.append(taskLine);
               }
-              else
-                  break;
+              else{
+                  //The schedule must have no more tasks to print
+                  taskLine = " ".repeat(headingLength[row]-1) + "|";
+                  weekHeadingSb.append(taskLine);
+                  continue;
+              }
+                  
           }
           weekHeadingSb.append("\n");
       }
       return weekHeadingSb.toString();
+  }
 
+    private static String formatMonthTasks(Schedule[] schedules){
+
+      Schedule schedule;
+  
+      final int MAXTASKSLISTED = 20;
+      final int MAXTITLELENGTH = 8;
+      ArrayList< ArrayList< String > > monthData = new ArrayList< ArrayList< String > >();
       
+      //Go through each schedule
+      StringBuilder monthHeadingSb = new StringBuilder("");
       
-    }
+      //For use in formatting column width
+      int[] headingLength = new int[schedules.length];
+      
+      //Get the length of the schedule with the most amount of tasks
+      int knownMaxTasks = 0;
+      
+      for (int i = 0; i < schedules.length; i++){
+          //Record schedule's tasks
+          ArrayList< String > scheduleData = new ArrayList< String >();
+  
+          schedule = schedules[i];
+          ArrayList<TaskActivity> tasks = schedule.getTaskList();
+  
+          String day, month;
+          day = schedules[i].getDateString().substring(6, 8);
+          month = numberMonthToString(schedules[i].getDateString().substring(4, 6));
+          String heading = "*[" + day + " " + month + "]-----------------";
+          headingLength[i] = heading.length();
+          monthHeadingSb.append(heading);
+          
+         
+          if (tasks.size() > knownMaxTasks)
+              knownMaxTasks = tasks.size();
+  
+          //Grab all pertinent data from each day's task list (up to 20 tasks for any given day)
+          String startTime, endTime, title;
+          for (int j = 0; j < tasks.size() || j == MAXTASKSLISTED-1; j++){
+              title = tasks.get(j).getName();
+              //startTime = String.valueOf(tasks.get(j).getStartTime());
+              //endTime = String.valueOf(tasks.get(j).getEndTime());
+              startTime = numberTimeToString(tasks.get(j).getStartTime(), false);
+              endTime = numberTimeToString(tasks.get(j).getStartTime(), false);
+              
+              if (title.length() > MAXTITLELENGTH){
+                  title = title.substring(0, MAXTITLELENGTH).concat("..");
+              }
+              scheduleData.add(j, startTime + "-" + endTime + " " + title);
+          }
+          monthData.add(i, scheduleData);
+          
+      }
+      monthHeadingSb.append("*\n");
+  
+      // Loop to display remaining days in the month
+      for (int i = 0; i < schedules.length; i++) {
+          if (i >= knownMaxTasks) {
+              String day = schedules[i].getDateString().substring(6, 8);
+              String month = numberMonthToString(schedules[i].getDateString().substring(4, 6));
+              String heading = "*[" + day + " " + month + "]-----------------*";
+              headingLength[i] = heading.length();
+              monthHeadingSb.append(heading);
+              monthHeadingSb.append("|").append(" ".repeat(headingLength[i] - 3)).append("|").append("\n");
+              monthHeadingSb.append("*-----------------------*").append("\n");
+          }
+      }
+  
+      //Collate each line
+      for (int i = 0; i < MAXTASKSLISTED && i < knownMaxTasks; i++){
+          String taskLine;
+          //For each column
+          
+          for (int j = 0; j < monthData.size(); j++){
+              ArrayList< String > scheduleData = monthData.get(j);
+              if (i < scheduleData.size()){
+                  if (j == 0){
+                      monthHeadingSb.append("|");
+                  }
+                  taskLine = scheduleData.get(i);
+                  taskLine = taskLine.concat(" ".repeat(headingLength[i]-taskLine.length() -1) + "|");
+                  monthHeadingSb.append(taskLine);
+              }
+              else
+                  break;
+          }
+          monthHeadingSb.append("\n");
+      }
+  
+      return monthHeadingSb.toString();
+  
+  }
 
     private static String numberTimeToString(double time, boolean twentyFourHour){
       int hour = (int) time;
