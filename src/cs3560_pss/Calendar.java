@@ -1113,12 +1113,19 @@ public class Calendar {
 				double currentEnd = currentStart + currentTask.getDuration();
 
 				// if the task to be added's start time or end time is in between
-				// any of the tasks start time and end time, there's a conflict
+				// any of the tasks start time and end time, or vice versa,
+				//there's a conflict
 
 				// the task can start when another tasks ends,
 				// or end when another tasks starts
+				
+				//if new task's start or end time is in between another task's
 				if ((taskStart >= currentStart && taskStart < currentEnd)
-						|| (taskEnd > currentStart && taskEnd <= currentEnd)) {
+						|| (taskEnd > currentStart && taskEnd <= currentEnd)
+						
+						//or vice versa
+						||( currentStart >= taskStart && currentStart < taskEnd)
+						|| (currentEnd > taskStart && currentEnd <= taskEnd)) {
 					return true;
 				}
 
@@ -1144,8 +1151,13 @@ public class Calendar {
 				// the task can start when another tasks ends,
 				// or end when another tasks starts
 				if ((currentTask.isRecurringTask() || currentTask.isTransientTask())
+						//if new task's start or end time is in between another task's
 						&& (taskStart >= currentStart && taskStart < currentEnd)
-						|| (taskEnd > currentStart && taskEnd <= currentEnd)) {
+						|| (taskEnd > currentStart && taskEnd <= currentEnd)
+						
+						//or vice versa
+						||( currentStart >= taskStart && currentStart < taskEnd)
+						|| (currentEnd > taskStart && currentEnd <= taskEnd)) {
 					return true;
 				}
 
