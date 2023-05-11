@@ -11,10 +11,15 @@ public class Calendar {
 //    ArrayList<Integer>[][] monthAndDayList; //??
 	Display display;
 
+	// schedule model
+	private ScheduleModel scheduleModel;
+
 	public Calendar() {
 		scheduleList = new ArrayList<ArrayList<Schedule>>();
 		// initialize monthAndDayList
 		display = new Display(null);
+
+		scheduleModel = new ScheduleModel();
 	}
 
 	// calculates the index of the day schedule that is the beginning of the input
@@ -281,7 +286,6 @@ public class Calendar {
 
 			int endDayIndex = endMonthIndex + TaskActivity.getDay(endDate) - 1;
 
-
 			// make a counter of the days we are iterating through to add tasks
 
 			int currentNumDays = 0;
@@ -345,6 +349,8 @@ public class Calendar {
 									} else {
 										// otherwise there is a conflict
 										// return error, revert tasks
+
+										this.restoreList();
 									}
 
 								}
@@ -397,6 +403,7 @@ public class Calendar {
 									} else {
 										// otherwise there is a conflict
 										// return error, revert tasks
+										this.restoreList();
 									}
 								}
 
@@ -486,7 +493,7 @@ public class Calendar {
 
 						// otherwise, return error and revert tasks
 						else {
-
+							this.restoreList();
 						}
 
 					}
@@ -536,7 +543,7 @@ public class Calendar {
 
 						// otherwise, return error and revert tasks
 						else {
-
+							this.restoreList();
 						}
 
 					}
@@ -546,6 +553,7 @@ public class Calendar {
 
 			else {
 				// error TODO --Conflict try a different time
+				this.restoreList();
 			}
 
 		}
@@ -573,6 +581,7 @@ public class Calendar {
 			// if the task isn't recurring, then return an error
 			if (!targetTask.isRecurringTask()) {
 				// return error, revert tasks
+				this.restoreList();
 			}
 
 			// if the target task is a recurring task, then we need to check whether its the
@@ -580,6 +589,7 @@ public class Calendar {
 			// if it is, display error and revert tasks
 			if (targetTask.getFirstHalf() != null) {
 				// display error
+				this.restoreList();
 			}
 
 			// At this point we have confirmed that we're not targeting just the second half
@@ -869,6 +879,7 @@ public class Calendar {
 					schedule.addTask(recurringLink);
 				} else {
 					// display error, revert changes
+					this.restoreList();
 				}
 			}
 
@@ -912,6 +923,7 @@ public class Calendar {
 						schedule.addTask(secondRecurring);
 					} else {
 						// display error, revert changes
+						this.restoreList();
 					}
 				}
 
@@ -1114,17 +1126,17 @@ public class Calendar {
 
 				// if the task to be added's start time or end time is in between
 				// any of the tasks start time and end time, or vice versa,
-				//there's a conflict
+				// there's a conflict
 
 				// the task can start when another tasks ends,
 				// or end when another tasks starts
-				
-				//if new task's start or end time is in between another task's
+
+				// if new task's start or end time is in between another task's
 				if ((taskStart >= currentStart && taskStart < currentEnd)
 						|| (taskEnd > currentStart && taskEnd <= currentEnd)
-						
-						//or vice versa
-						||( currentStart >= taskStart && currentStart < taskEnd)
+
+						// or vice versa
+						|| (currentStart >= taskStart && currentStart < taskEnd)
 						|| (currentEnd > taskStart && currentEnd <= taskEnd)) {
 					return true;
 				}
@@ -1151,12 +1163,12 @@ public class Calendar {
 				// the task can start when another tasks ends,
 				// or end when another tasks starts
 				if ((currentTask.isRecurringTask() || currentTask.isTransientTask())
-						//if new task's start or end time is in between another task's
+						// if new task's start or end time is in between another task's
 						&& (taskStart >= currentStart && taskStart < currentEnd)
 						|| (taskEnd > currentStart && taskEnd <= currentEnd)
-						
-						//or vice versa
-						||( currentStart >= taskStart && currentStart < taskEnd)
+
+						// or vice versa
+						|| (currentStart >= taskStart && currentStart < taskEnd)
 						|| (currentEnd > taskStart && currentEnd <= taskEnd)) {
 					return true;
 				}
@@ -1173,6 +1185,187 @@ public class Calendar {
 
 	}
 
+	// method that copies tasks over
+	public void restoreList() {
+		// stores reference to schedule model's schedule list
+		ArrayList<ArrayList<Schedule>> update = this.scheduleModel.getScheduleList();
+
+		// new copy of schedule list
+		ArrayList<ArrayList<Schedule>> copy = new ArrayList<ArrayList<Schedule>>();
+
+		// iterate through years of schedule model's list
+		for (ArrayList<Schedule> year : update) {
+
+			// add new year to copy
+			copy.add(new ArrayList<Schedule>());
+			ArrayList<Schedule> currentYearCopy = copy.get(copy.size() - 1);
+
+			// iterate through year's schedules
+			for (Schedule schedule : year) {
+
+				// add new schedule for current year
+				currentYearCopy.add(new Schedule(schedule.getDate()));
+
+				// current schedule copy
+				Schedule currentScheduleCopy = currentYearCopy.get(currentYearCopy.size() - 1);
+				// get tasklist
+				ArrayList<TaskActivity> taskList = schedule.getTaskList();
+
+				for (TaskActivity currentTask : taskList) {
+
+					// new task copy
+					TaskActivity taskCopy = null;
+
+					// get parameters
+					int date = currentTask.getDate();
+					String name = currentTask.getName();
+					String type = currentTask.getType();
+					double duration = currentTask.getDuration();
+					double startTime = currentTask.getStartTime();
+
+					// if it's recurring, get the rest of the parameters
+					if (currentTask.isRecurringTask()) {
+						int startDate = ((RecurringTaskActivity) currentTask).getStartDate();
+						int endDate = ((RecurringTaskActivity) currentTask).getEndDate();
+						int frequency = ((RecurringTaskActivity) currentTask).getFrequency();
+
+						// create recurring task copy
+						taskCopy = new RecurringTaskActivity(name, type, startTime, duration, date, frequency,
+								startDate, endDate);
+
+						// add it to copy schedule
+						currentScheduleCopy.addTask(taskCopy);
+
+					}
+
+					// if anti task
+
+					if (currentTask.isAntiTask()) {
+						// create anti task
+						taskCopy = new AntiTaskActivity(name, type, startTime, duration, date);
+
+						// create copy of recurring task link, link it to copy
+
+						TaskActivity currentTaskRecurring = ((AntiTaskActivity) taskCopy).getRecurring();
+
+						// get extra params
+						String recurName = currentTaskRecurring.getName();
+						String recurType = currentTaskRecurring.getType();
+						double recurDuration = currentTaskRecurring.getDuration();
+						double recurStartTime = currentTaskRecurring.getStartTime();
+						int recurDate = currentTaskRecurring.getDate();
+						int startDate = ((RecurringTaskActivity) currentTaskRecurring).getStartDate();
+						int endDate = ((RecurringTaskActivity) currentTaskRecurring).getEndDate();
+						int frequency = ((RecurringTaskActivity) currentTaskRecurring).getFrequency();
+
+						// create copy
+						RecurringTaskActivity recurringCopy = new RecurringTaskActivity(recurName, recurType,
+								recurStartTime, recurDuration, recurDate, frequency, startDate, endDate);
+
+						// link it
+						((AntiTaskActivity) currentTask).setRecurring(recurringCopy);
+
+						// add the copy to schedule
+						currentScheduleCopy.addTask(taskCopy);
+
+					}
+
+					// if transient()
+					if (currentTask.isTransientTask()) {
+
+						// create copy
+						taskCopy = new TransientTaskActivity(name, type, startTime, duration, date);
+
+						// add it to list
+						currentScheduleCopy.addTask(taskCopy);
+					}
+
+					// we need to consider the linking of two halves of tasks
+					// if we encounter the second half of a task, then we will have created the
+					// first half already
+					// so we need to retrieve the first half, and link it and the current task copy
+					// together
+
+					if (currentTask.getFirstHalf() != null) {
+
+						// get firstHalf
+						TaskActivity firstHalf = currentTask.getFirstHalf();
+
+						// get first half's basic parameter fields to search
+						int firstHalfDate = firstHalf.getDate();
+						String firstHalfName = firstHalf.getName();
+						String firstHalfType = firstHalf.getType();
+						double firstHalfDuration = firstHalf.getDuration();
+						double firstHalfStartTime = firstHalf.getStartTime();
+
+						// get the schedule index
+
+						int firstHalfYear = TaskActivity.getYear(firstHalfDate);
+						int firstHalfYearIndex = firstHalfYear - 2020;
+
+						int firstHalfMonthBeginning = calculateMonthBeginning(TaskActivity.getMonth(firstHalfDate));
+						int firstHalfDayIndex = firstHalfMonthBeginning + TaskActivity.getDay(firstHalfDate) - 1;
+
+						// get schedule
+						Schedule firstHalfSchedule = this.scheduleList.get(firstHalfYearIndex).get(firstHalfDayIndex);
+
+						// get taskList
+						ArrayList<TaskActivity> firstHalfTaskList = firstHalfSchedule.getTaskList();
+
+						// store reference to first half
+						TaskActivity firstHalfCopy = null;
+
+						for (TaskActivity searchTask : firstHalfTaskList) {
+
+							// if the tasks basic parameters match the first half
+							if (searchTask.getDate() == firstHalfDate && searchTask.getName() == firstHalfName
+									&& searchTask.getType() == firstHalfType
+									&& searchTask.getDuration() == firstHalfDuration
+									&& searchTask.getStartTime() == firstHalfStartTime
+
+									// and if the current search task's type matches the first half task's
+									&& ((firstHalf.isTransientTask() && searchTask.isTransientTask())
+											|| (firstHalf.isRecurringTask() && searchTask.isRecurringTask())
+											|| (firstHalf.isAntiTask() && searchTask.isAntiTask()))) {
+
+								/// store reference and link the two halves
+								firstHalfCopy = searchTask;
+
+								firstHalfCopy.setSecondHalf(taskCopy);
+								taskCopy.setFirstHalf(firstHalfCopy);
+
+							}
+
+						}
+
+						// if it is anti task, then we also need to grab the recurring tasks that the
+						// first and second half are linked to
+						// and link those together
+						if (firstHalfCopy.isAntiTask()) {
+
+							// get first half's recurring task
+							RecurringTaskActivity firstHalfCopyRecurring = ((AntiTaskActivity) firstHalfCopy)
+									.getRecurring();
+
+							// get second half's recurring task
+							RecurringTaskActivity secondHalfCopyRecurring = ((AntiTaskActivity) taskCopy)
+									.getRecurring();
+
+							firstHalfCopyRecurring.setSecondHalf(secondHalfCopyRecurring);
+							secondHalfCopyRecurring.setFirstHalf(firstHalfCopyRecurring);
+
+						}
+
+					}
+
+				}
+			}
+		}
+
+		// set the schedule list to point to copy
+		this.scheduleList = copy;
+	}
+
 	// returns schedule list
 	public ArrayList<ArrayList<Schedule>> getScheduleList() {
 		return scheduleList;
@@ -1180,5 +1373,13 @@ public class Calendar {
 
 	public Display getDisplay() {
 		return display;
+	}
+
+	public ScheduleModel getScheduleModel() {
+		return this.scheduleModel;
+	}
+
+	public void setScheduleModel(ScheduleModel scheduleModel) {
+		this.scheduleModel = scheduleModel;
 	}
 }

@@ -76,5 +76,9 @@ public class Schedule {
 	public ArrayList<TaskActivity> getTaskList() {
 		return this.taskList;
 	}
+	
+	public int getDate() {
+		return date;
+	}
 
 }
