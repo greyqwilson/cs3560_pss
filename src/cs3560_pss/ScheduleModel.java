@@ -8,7 +8,6 @@ public class ScheduleModel {
 
 	public ScheduleModel() {
 		scheduleList = new ArrayList<ArrayList<Schedule>>();
-		calendar = new Calendar();
 	}
 
 	public TaskActivity createTask(String name) {

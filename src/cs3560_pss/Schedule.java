@@ -21,40 +21,39 @@ public class Schedule {
 
 		this.taskList.add(task);
 	}
-	
-	
-	//sorts tasklist in order of startTime increasing
-	public ArrayList<TaskActivity> getOrderedTaskList(){
-		 ArrayList<TaskActivity> ordered = new ArrayList<TaskActivity>();
-		 
-		 //while taskList is not empty
-		 while(this.taskList.size() > 0) {
-			 
-			 //iterate through list to find earliest task and position
-			 int earliestTask = 0;
-			 TaskActivity earliest = this.taskList.get(0);
-			 for(int i = 1; i < taskList.size(); i ++) {
-				 TaskActivity current = this.getTaskList().get(i);
-				 if(earliest.getStartTime() > current.getStartTime()) {
-					 earliest = current;
-					 earliestTask = i;
-				 }
-			 }
-			 
-			 //remove earliestTask
-			 
-			 this.taskList.remove(earliestTask);
-			 
-			 //add earliest task into ordered arraylist
-			 ordered.add(earliest);
-			 
-		 }
-		 
-		 //set the ordered list to be the tasklist
-		 this.taskList = ordered;
-		 
-		 return this.taskList;
-		 	
+
+	// sorts tasklist in order of startTime increasing
+	public ArrayList<TaskActivity> getOrderedTaskList() {
+		ArrayList<TaskActivity> ordered = new ArrayList<TaskActivity>();
+
+		// while taskList is not empty
+		while (this.taskList.size() > 0) {
+
+			// iterate through list to find earliest task and position
+			int earliestTask = 0;
+			TaskActivity earliest = this.taskList.get(0);
+			for (int i = 1; i < taskList.size(); i++) {
+				TaskActivity current = this.getTaskList().get(i);
+				if (earliest.getStartTime() > current.getStartTime()) {
+					earliest = current;
+					earliestTask = i;
+				}
+			}
+
+			// remove earliestTask
+
+			this.taskList.remove(earliestTask);
+
+			// add earliest task into ordered arraylist
+			ordered.add(earliest);
+
+		}
+
+		// set the ordered list to be the tasklist
+		this.taskList = ordered;
+
+		return this.taskList;
+
 	}
 
 	public void deleteTask(TaskActivity task) {
@@ -76,9 +75,13 @@ public class Schedule {
 	public ArrayList<TaskActivity> getTaskList() {
 		return this.taskList;
 	}
-	
+
 	public int getDate() {
 		return date;
+	}
+
+	public String getDateString() {
+		return String.valueOf(date);
 	}
 
 }

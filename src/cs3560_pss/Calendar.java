@@ -242,33 +242,26 @@ public class Calendar {
 
 		// check if it's recurring, transient, or anti task
 		for (int i = 0; i < recurringTaskTypes.length; i++) {
-			if (typeString.toLowerCase() == recurringTaskTypes[i].toLowerCase()) {
+			if (typeString.toLowerCase().equals(recurringTaskTypes[i].toLowerCase())) {
 				isRecurring = true;
 			}
 		}
 
 		for (int i = 0; i < transientTaskTypes.length; i++) {
-			if (typeString.toLowerCase() == transientTaskTypes[i].toLowerCase()) {
+		
+
+			if (typeString.toLowerCase().equals(transientTaskTypes[i].toLowerCase())  ) {
 				isTransient = true;
 			}
 		}
 
-		if (typeString.toLowerCase() == antiTaskType.toLowerCase()) {
+		if (typeString.toLowerCase().equals(antiTaskType.toLowerCase())) {
 			isRecurring = true;
 		}
+		
 
 		if (isRecurring) {
-			RecurringTaskActivity task = new RecurringTaskActivity(name, typeString, startTime, duration, date,
-					frequency, startDate, endDate);
-
-			// get the year, month, and day separately
-
-			int year = TaskActivity.getYear(task.getDate());
-
-			// create the year sub arraylist in the schedule list if it doesn't exist
-			// already
-			this.createYear(year);
-			this.createYear(TaskActivity.getYear(endDate));
+			
 			// get the indexes of the year, and the schedule index of that day of month
 			// within that year of the startDate
 
@@ -299,10 +292,33 @@ public class Calendar {
 				for (int currentDay = (currentYearIndex == startYearIndex ? startDayIndex
 						: 0); currentDay <= (currentYearIndex == endYearIndex ? endDayIndex : 364); currentDay++) {
 
+				
+					
 					// if the current number of days can be divided by frequency, then there should
 					// be an iteration of the recurring task on this day
 					if (currentNumDays % frequency == 0) {
+						
+						
+						String currentTaskYear = String.valueOf(currentYearIndex+ 2020) ;
+						String currentTaskMonth =  (this.calculateMonthFromDays(currentDay + 1) < 10 ? "0" : "" ) +String.valueOf( this.calculateMonthFromDays(currentDay + 1));
+						String currentTaskDay = ((currentDay + 1) < 10 ? "0" : "" ) +String.valueOf(currentDay + 1);
+						int currentDate = Integer.parseInt( currentTaskYear + currentTaskMonth + currentTaskDay);
+						
+						
+						
+						RecurringTaskActivity task = new RecurringTaskActivity(name, typeString, startTime, duration, currentDate,
+								frequency, startDate, endDate);
 
+						// get the year, month, and day separately
+
+						int year = TaskActivity.getYear(task.getDate());
+
+						// create the year sub arraylist in the schedule list if it doesn't exist
+						// already
+						this.createYear(year);
+						this.createYear(TaskActivity.getYear(endDate));
+						
+						
 						// if there isn't a schedule conflict, add it to the schedule
 						Schedule schedule = scheduleList.get(currentYearIndex).get(currentDay);
 						if (!checkForConflict(task)) {
@@ -351,6 +367,7 @@ public class Calendar {
 										// return error, revert tasks
 
 										this.restoreList();
+										return false;
 									}
 
 								}
@@ -404,15 +421,20 @@ public class Calendar {
 										// otherwise there is a conflict
 										// return error, revert tasks
 										this.restoreList();
+										return false;
 									}
 								}
 
 							}
+							
+							
+							
 						}
 
 						else {
 							// Revert tasks notify user
-
+							this.restoreList();
+							return false;
 						}
 
 					}
@@ -457,7 +479,7 @@ public class Calendar {
 				// check if task wraps to the next day
 
 				if (duration > (24 - startTime)) {
-
+					
 					// if the current day is the last day of the year, december 31st
 					if (month == 12 && day == 31) {
 
@@ -494,6 +516,7 @@ public class Calendar {
 						// otherwise, return error and revert tasks
 						else {
 							this.restoreList();
+							return false;
 						}
 
 					}
@@ -544,6 +567,7 @@ public class Calendar {
 						// otherwise, return error and revert tasks
 						else {
 							this.restoreList();
+							return false;
 						}
 
 					}
@@ -554,6 +578,7 @@ public class Calendar {
 			else {
 				// error TODO --Conflict try a different time
 				this.restoreList();
+				return false;
 			}
 
 		}
@@ -582,6 +607,7 @@ public class Calendar {
 			if (!targetTask.isRecurringTask()) {
 				// return error, revert tasks
 				this.restoreList();
+				return false;
 			}
 
 			// if the target task is a recurring task, then we need to check whether its the
@@ -590,6 +616,7 @@ public class Calendar {
 			if (targetTask.getFirstHalf() != null) {
 				// display error
 				this.restoreList();
+				return false;
 			}
 
 			// At this point we have confirmed that we're not targeting just the second half
@@ -661,9 +688,14 @@ public class Calendar {
 
 			}
 
+		} 
+		//if the types dont match anything
+		else {
+			return false;
 		}
 
-		return false;
+		//at this point the tasks have been added successfully
+		return true;
 	}
 
 	// takes in object reference to task, deletes task based on its type
@@ -880,6 +912,7 @@ public class Calendar {
 				} else {
 					// display error, revert changes
 					this.restoreList();
+					return false;
 				}
 			}
 
@@ -924,6 +957,7 @@ public class Calendar {
 					} else {
 						// display error, revert changes
 						this.restoreList();
+						return false;
 					}
 				}
 
@@ -931,7 +965,8 @@ public class Calendar {
 
 		}
 
-		return false;
+		//at this point the tasks have been deleted successfully
+		return true;
 
 	}
 
@@ -1009,8 +1044,8 @@ public class Calendar {
 
 	}
 
-	// returns arraylist for a day
-	public ArrayList<TaskActivity> getTasksForDay(int date) {
+	// returns array of tasks for a day
+	public TaskActivity[] getTasksForDay(int date) {
 
 		// get year, month, day
 		int year = TaskActivity.getYear(date);
@@ -1030,19 +1065,56 @@ public class Calendar {
 		// this is for in case they reference a year after 2020 but it doesn't exist
 		this.createYear(year);
 
-		// return the task list of the day
-		return this.scheduleList.get(yearIndex).get(dayIndex).getTaskList();
+		
+		//get task list
+		ArrayList<TaskActivity> taskList = this.scheduleList.get(yearIndex).get(dayIndex).getTaskList();
+		// return the task list of the day, format into array
+		TaskActivity[] taskArray = new TaskActivity[taskList.size()];
+		
+		
+		for(int i = 0; i <  taskList.size(); i++) {
+			taskArray[i]  = taskList.get(i);
+		}
+		
+		return taskArray;
 
 	}
 
 	// returns arraylist of arraylists containing tasks for a week
-	public ArrayList<ArrayList<TaskActivity>> getTasksForWeek(int date) {
-		return null;
+	public Schedule[] getTasksForWeek(int date) {
+		//assume that the start of each year resets the day of week to sunday
+		System.out.println(date);
+		//get number of days from beginning of year
+		int numOfDays = this.numOfDaysFromYearBeginning(date);
+		//get the num of days of the ending of the week before the current one
+		//this is also the index of the beginning of the current week
+		int lastWeekEnding = numOfDays - numOfDays%7;
+		
+		//get index of current year
+		int yearIndex = TaskActivity.getYear(date) - 2020;
+		System.out.println(yearIndex);
+		//Array of schedules to store week's tasks
+		//is the size of the remainder of the year or 7 days if there's enough days left
+		Schedule[] weekSchedules = new Schedule[((lastWeekEnding + 7) >= 365 ? 365 - lastWeekEnding : 7)];
+		//current empty slot in array
+		int arrPointer = 0;
+
+		//gets tasks for up to the end of the current week or end of the year if there's not enough for 7 days
+		for(int i = lastWeekEnding; i < ((lastWeekEnding + 7) >= 365 ? 365 : lastWeekEnding + 7); i++) {
+			weekSchedules[arrPointer] = this.scheduleList.get(yearIndex).get(i);
+			arrPointer++;
+		}
+		
+		return weekSchedules;
+		
+		
 
 	}
 
-	// returns arraylist of arraylists containing tasks for a month
-	public ArrayList<ArrayList<TaskActivity>> getTasksForMonth(int date) {
+	// returns schedule array of month
+	public Schedule[] getTasksForMonth(int date) {
+		
+		
 		// get year, month, day
 		int year = TaskActivity.getYear(date);
 		int month = TaskActivity.getMonth(date);
@@ -1059,17 +1131,19 @@ public class Calendar {
 		// num of days in each month
 		int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-		// array list of taskLists in month
-		ArrayList<ArrayList<TaskActivity>> taskListsOfMonth = new ArrayList<ArrayList<TaskActivity>>();
+		
+		//month schedule array, size is of the num of days in month
+		Schedule[] monthSchedules = new Schedule[monthDays[month-1]];
+		
 
 		// iterate from Schedules from beginning of month to end of month
 
 		for (int i = 0; i < monthDays[month - 1]; i++) {
 
-			taskListsOfMonth.add(this.scheduleList.get(yearIndex).get(beginningOfMonth + i).getTaskList());
+			monthSchedules[i] =this.scheduleList.get(yearIndex).get(beginningOfMonth + i);
 		}
 
-		return taskListsOfMonth;
+		return monthSchedules;
 	}
 
 	// ? is this needed?
@@ -1374,6 +1448,10 @@ public class Calendar {
 	public Display getDisplay() {
 		return display;
 	}
+	public void setDisplay(Display display) {
+		this.display = display;
+	}
+	
 
 	public ScheduleModel getScheduleModel() {
 		return this.scheduleModel;
