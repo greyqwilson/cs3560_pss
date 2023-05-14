@@ -4,6 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.ArrayList;
 import java.text.StringCharacterIterator;
 
@@ -22,15 +29,65 @@ public class Display {
 		return task;
 	}
 
-	public void loadScheduleFromFile() {
-		Schedule schedFromFile;
-		File file = new File(SCHEDULE_DIR);
-		// Open file for reading
-		try (FileReader fw = new FileReader(file)) {
 
-		} catch (IOException e) {
+    public void loadScheduleFromFile() {
+      Schedule schedFromFile;
+      JSONParser parser = new JSONParser();
 
-		}
+      /*TODO
+       * 
+       * 1.) Filepath Parameter
+       * 2.) Conditional Statements for different task types
+       * 3.) Return type?
+       * 	a.) Attributes
+       * 	b.) Tasks
+       * 	c.) Array of Tasks
+       * 4.) Make sure everyone can run it.
+       * 
+       */
+      
+      
+      
+  	try {
+  		JSONArray a = (JSONArray) parser.parse(new FileReader("")); //need a method for filepath
+  		
+  		for(int i = 0; i < a.size(); i++) {
+  			JSONObject task = (JSONObject) a.get(i);
+  			
+  			String taskName = (String) task.get("Name");
+  			
+  			String taskType = (String) task.get("Type");
+			
+  			Long taskStartDate = (Long) task.get("StartDate");
+  			
+  			Long taskStartTime = (Long) task.get("StartTime");
+			
+  			Double taskDuration = (Double) task.get("Duration");
+ 			
+  			Long taskEndDate = (Long) task.get("EndDate");
+  			
+  			Long taskFrequency = (Long) task.get("Frequency");
+  			
+  			System.out.println(taskName);
+  			System.out.println(taskType);
+  			System.out.println(taskStartDate);
+  			System.out.println(taskStartTime);
+  			System.out.println(taskDuration);
+  			System.out.println(taskEndDate);
+  			System.out.println(taskFrequency);
+  		}
+  			
+  		
+  	} catch (FileNotFoundException e) {
+  		// TODO Auto-generated catch block
+  		e.printStackTrace();
+  	} catch (IOException e) {
+  		// TODO Auto-generated catch block
+  		e.printStackTrace();
+  	} catch (ParseException e) {
+  		// TODO Auto-generated catch block
+  		e.printStackTrace();
+  	}
 
 		// Copy relevant data to a schedule object
 		// Pass into whoever takes it and display
