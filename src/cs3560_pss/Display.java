@@ -20,25 +20,27 @@ import java.io.InputStreamReader;
 public class Display {
 
 	private Calendar calendar;
-	private int currentDay, currentWeek, currentMonth;
+	Integer currentYear;
+
 	final String SCHEDULE_DIR = ".\\schedules\\";
 
 	public Display(Calendar calendar) {
 		this.calendar = calendar;
+
+		currentYear = (this.calendar.scheduleList.size() > 0) ? 2020 : null;
 	}
 
-	public static void mainLoop(){
+	public static void mainLoop() {
 		System.out.println("\t~~Personal Schedule System~~");
-		try (BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))){
+		try (BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))) {
 			mainMenu(keyboard);
 
-		}
-		catch (IOException e){
-			
+		} catch (IOException e) {
+
 		}
 	}
 
-	public static void printMainMenu(){
+	public static void printMainMenu() {
 		System.out.println("\t ~~Main Menu~~");
 		System.out.println("1. Task Creator/Editor - Create a task, edit a task, or remove a task");
 		System.out.println("2. Display today's schedule");
@@ -46,45 +48,46 @@ public class Display {
 		System.out.println("4. Display this month's schedule");
 		System.out.println("5. Load a previously saved schedule");
 		System.out.println("6. Save the current schedule");
+		System.out.println("7. Add a year to the calendar");
 		System.out.println("0. Exit");
 	}
 
-	public static void mainMenu(BufferedReader kb) throws IOException{
+	public static void mainMenu(BufferedReader kb) throws IOException {
 		String choice = "-1";
-		while (!choice.matches("0")){
+		while (!choice.matches("0")) {
 			printMainMenu();
 			System.out.println("Please select a menu option:");
 			choice = kb.readLine();
 			switch (choice) {
-				case ("1"):
-					taskMenu(kb);
-					break;
-				case ("2"):
-					displayDayMenu(kb);
-					break;
-				case ("3"):
-					displayWeekMenu(kb);
-					break;
-				case ("4"):
-					displayMonthMenu(kb);
-					break;
-				case ("5"):
-					loadFileMenu(kb);
-					break;
-				case ("6"):
-					saveFileMenu(kb);
-					break;
-				case ("0"):
-					System.out.println("Thank you for using PSS!");
-					break;
-				default:
-					System.out.println("The menu option entered was not found.");
-					break;
+			case ("1"):
+				taskMenu(kb);
+				break;
+			case ("2"):
+				displayDayMenu(kb);
+				break;
+			case ("3"):
+				displayWeekMenu(kb);
+				break;
+			case ("4"):
+				displayMonthMenu(kb);
+				break;
+			case ("5"):
+				loadFileMenu(kb);
+				break;
+			case ("6"):
+				saveFileMenu(kb);
+				break;
+			case ("0"):
+				System.out.println("Thank you for using PSS!");
+				break;
+			default:
+				System.out.println("The menu option entered was not found.");
+				break;
 			}
 		}
 	}
 
-	public static void printTaskMenu(){
+	public static void printTaskMenu() {
 		System.out.println("\t ~~Task Menu~~");
 		System.out.println("1. Create a task");
 		System.out.println("2. Edit a task");
@@ -92,163 +95,155 @@ public class Display {
 		System.out.println("0. Return to the main menu");
 	}
 
-	public static void taskMenu(BufferedReader kb) throws IOException{
+	public static void taskMenu(BufferedReader kb) throws IOException {
 		String choice = "-1";
-		while (!choice.matches("0")){
+		while (!choice.matches("0")) {
 			printTaskMenu();
 			System.out.println("Please select a menu option:");
 			choice = kb.readLine();
 			switch (choice) {
-				case ("1"):
-					taskMenuCreate(kb);
-					break;
-				case ("2"):
-					taskMenuEdit(kb);
-					break;
-				case ("3"):
-					taskMenuDelete(kb);
-					break;
-				case ("0"):
-					break;
-				default:
-					System.out.println("The menu option entered was not found.");
-					break;
+			case ("1"):
+				taskMenuCreate(kb);
+				break;
+			case ("2"):
+				taskMenuEdit(kb);
+				break;
+			case ("3"):
+				taskMenuDelete(kb);
+				break;
+			case ("0"):
+				break;
+			default:
+				System.out.println("The menu option entered was not found.");
+				break;
 			}
 		}
 	}
 
-	public static void taskMenuCreate(BufferedReader kb) throws IOException{
+	public static void taskMenuCreate(BufferedReader kb) throws IOException {
 		System.out.println("\t --Creating a task--");
 		System.out.println("Please enter the name of the task: ");
 		String taskName = kb.readLine();
-		if (taskName.strip().length() == 0){
+		if (taskName.strip().length() == 0) {
 			return;
 		}
 	}
 
-    public static void taskMenuEdit(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void taskMenuEdit(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void taskMenuDelete(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void taskMenuDelete(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void displayDayMenu(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void displayDayMenu(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void displayWeekMenu(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void displayWeekMenu(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void displayMonthMenu(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void displayMonthMenu(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void loadFileMenu(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void loadFileMenu(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
-    public static void saveFileMenu(BufferedReader kb){
-        System.out.println("Unimplemented");
-    }
+	public static void saveFileMenu(BufferedReader kb) {
+		System.out.println("Unimplemented");
+	}
 
 	public TaskActivity searchTask(String taskName) {
 		TaskActivity task = calendar.searchTask(taskName);
 		return task;
 	}
 
-
-
-    public void loadScheduleFromFile() {
-      Schedule schedFromFile;
-      JSONParser parser = new JSONParser();
-
-      /*TODO
-       * 
-       * 1.) Filepath Parameter
-       * 2.) Conditional Statements for different task types
-       * 3.) Return type?
-       * 	a.) Attributes
-       * 	b.) Tasks
-       * 	c.) Array of Tasks
-       * 4.) Make sure everyone can run it.
-       * 
-       */
-      
-      
-      
-  	try {
-  		JSONArray a = (JSONArray) parser.parse(new FileReader("")); //need a method for filepath
-  		
-  		for(int i = 0; i < a.size(); i++) {
-  			JSONObject task = (JSONObject) a.get(i);
-  			
-  			String taskName = (String) task.get("Name");
-  			
-  			String taskType = (String) task.get("Type");
-			
-  			Long taskStartDate = (Long) task.get("StartDate");
-  			
-  			Long taskStartTime = (Long) task.get("StartTime");
-			
-  			Double taskDuration = (Double) task.get("Duration");
- 			
-  			Long taskEndDate = (Long) task.get("EndDate");
-  			
-  			Long taskFrequency = (Long) task.get("Frequency");
-  			
-  			System.out.println(taskName);
-  			System.out.println(taskType);
-  			System.out.println(taskStartDate);
-  			System.out.println(taskStartTime);
-  			System.out.println(taskDuration);
-  			System.out.println(taskEndDate);
-  			System.out.println(taskFrequency);
-  		}
-  			
-  		
-  	} catch (FileNotFoundException e) {
-  		// TODO Auto-generated catch block
-  		e.printStackTrace();
-  	} catch (IOException e) {
-  		// TODO Auto-generated catch block
-  		e.printStackTrace();
-  	} catch (ParseException e) {
-  		// TODO Auto-generated catch block
-  		e.printStackTrace();
-  	}
-
-		// Copy relevant data to a schedule object
-		// Pass into whoever takes it and display
-
-	}
+//	public void loadScheduleFromFile() {
+//		Schedule schedFromFile;
+//		JSONParser parser = new JSONParser();
+//
+//		/*
+//		 * TODO
+//		 * 
+//		 * 1.) Filepath Parameter 2.) Conditional Statements for different task types
+//		 * 3.) Return type? a.) Attributes b.) Tasks c.) Array of Tasks 4.) Make sure
+//		 * everyone can run it.
+//		 * 
+//		 */
+//
+//		try {
+//			JSONArray a = (JSONArray) parser.parse(new FileReader("")); // need a method for filepath
+//
+//			for (int i = 0; i < a.size(); i++) {
+//				JSONObject task = (JSONObject) a.get(i);
+//
+//				String taskName = (String) task.get("Name");
+//
+//				String taskType = (String) task.get("Type");
+//
+//				Long taskStartDate = (Long) task.get("StartDate");
+//
+//				Long taskStartTime = (Long) task.get("StartTime");
+//
+//				Double taskDuration = (Double) task.get("Duration");
+//
+//				Long taskEndDate = (Long) task.get("EndDate");
+//
+//				Long taskFrequency = (Long) task.get("Frequency");
+//
+//				System.out.println(taskName);
+//				System.out.println(taskType);
+//				System.out.println(taskStartDate);
+//				System.out.println(taskStartTime);
+//				System.out.println(taskDuration);
+//				System.out.println(taskEndDate);
+//				System.out.println(taskFrequency);
+//			}
+//
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		// Copy relevant data to a schedule object
+//		// Pass into whoever takes it and display
+//
+//	}
 
 	public void writeScheduleToFile() {
 
 	}
 
-	public void displayTasksforDay() {
-		TaskActivity[] tasks;
-		tasks = calendar.getTasksForDay(currentDay);
-		for (int i = 0; i < tasks.length; i++) {
-			System.out.print(formatTaskPrintout((String.valueOf(tasks[i].getStartTime())), tasks[i].getName(),
-					tasks[i].getType(), "Description:", String.valueOf(tasks[i].getEndTime())));
-		}
-	}
-
-	public void displayTasksforWeek() {
+//	public void displayTasksforDay() {
+//		TaskActivity[] tasks;
+//		tasks = calendar.getTasksForDay(currentDay);
+//		for (int i = 0; i < tasks.length; i++) {
+//			System.out.print(formatTaskPrintout((String.valueOf(tasks[i].getStartTime())), tasks[i].getName(),
+//					tasks[i].getType(), "Description:", String.valueOf(tasks[i].getEndTime())));
+//		}
+//	}
+//
+	public void displayTasksforWeek(int date) {
 		Schedule[] weekSchedule;
-		weekSchedule = calendar.getTasksForWeek(currentWeek);
+		weekSchedule = calendar.getTasksForWeek(date);
 		String weekString = formatWeekTasks(weekSchedule);
 		System.out.print(weekString);
 
 	}
 
-	public void displayTasksforMonth() {
-		Schedule[] monthSchedule = calendar.getTasksForMonth(currentMonth);
-		formatMonthTasks(monthSchedule);
+	public void displayTasksforMonth(int date) {
+		Schedule[] monthSchedule = calendar.getTasksForMonth(date);
+		System.out.print(formatMonthTasks(monthSchedule));
 
 	}
 
@@ -630,49 +625,303 @@ public class Display {
 		}
 	}
 
-}
+	private static String monthStringToIntString(String monthNum) {
+		switch (monthNum) {
+		case ("jan"):
+			return ("01");
+		case ("feb"):
+			return ("02");
+		case ("mar"):
+			return ("03");
+		case ("apr"):
+			return ("04");
+		case ("may"):
+			return ("05");
+		case ("jun"):
+			return ("06");
+		case ("jul"):
+			return ("07");
+		case ("aug"):
+			return ("08");
+		case ("sep"):
+			return ("09");
+		case ("oct"):
+			return ("10");
+		case ("nov"):
+			return ("11");
+		case ("dec"):
+			return ("12");
+		}
+		return "01";
+	}
+//if calender schedule list is empty
+// no years in this calendar
+//intialize year
+//if we're at the end of the years listed
+//prompt user to create year
 
+	public void start() {
+		BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+		String choice = "";
+		yearMenu(keyboard, choice);
+	}
+
+	// year menu
+	public void yearMenu(BufferedReader keyboard, String choice) {
+
+		// enters while loop that only ends when user presses q
+		while (true) {
+
+			// display year, if there are no years in calendar it will ask to create year
+			displayYear();
+			System.out.println("Press 1 to add an empty year to the calendar");
+			System.out.println("Press 2 to move to previous year");
+			System.out.println("Press 3 to move to next year");
+			System.out.println("Type in the displayed abbreviation of a month to select that month");
+			System.out.println("Press q to quit");
+			System.out.println("\nEnter your choice\n\n");
+
+			// ask for user input
+			try {
+				choice = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// evaluate input
+			// adds new empty year to calendar
+			switch (choice.toLowerCase()) {
+			case "1":
+				this.createYear();
+				break;
+
+			// decrements to previous year if available
+			case "2":
+				if (currentYear != null && currentYear > 2020) {
+					currentYear -= 1;
+				}
+				break;
+
+			// increments to next year if available
+			case "3":
+				if (currentYear != null && currentYear - 2020 < this.calendar.scheduleList.size() - 1) {
+					currentYear++;
+				}
+				break;
+
+			// these enter the month menu
+			case ("jan"):
+				monthMenu(keyboard, choice, "jan");
+				break;
+			case ("feb"):
+				monthMenu(keyboard, choice, "feb");
+
+				break;
+			case ("mar"):
+				monthMenu(keyboard, choice, "mar");
+
+				break;
+			case ("apr"):
+				monthMenu(keyboard, choice, "apr");
+
+				break;
+			case ("may"):
+				monthMenu(keyboard, choice, "may");
+
+				break;
+			case ("jun"):
+				monthMenu(keyboard, choice, "jun");
+
+				break;
+			case ("jul"):
+				monthMenu(keyboard, choice, "jul");
+
+				break;
+			case ("aug"):
+				monthMenu(keyboard, choice, "aug");
+
+				break;
+			case ("sep"):
+				monthMenu(keyboard, choice, "sep");
+
+				break;
+			case ("oct"):
+				monthMenu(keyboard, choice, "oct");
+
+				break;
+			case ("nov"):
+				monthMenu(keyboard, choice, "nov");
+
+				break;
+			case ("dec"):
+				monthMenu(keyboard, choice, "dec");
+
+				break;
+
+			// exits program
+			case ("q"):
+				System.exit(0);
+			default:
+				System.out.println("You've entered the wrong command, please try again\n\n");
+			}
+
+		}
+	}
+
+	// month menu
+	public void monthMenu(BufferedReader keyboard, String choice, String month) {
+
+		// convert month to integer string version
+		String monthInt = Display.monthStringToIntString(month);
+		// get date of beginning of month, use that as input to display month and tasks
+		int date = Integer.valueOf(String.valueOf(currentYear) + monthInt + "01");
+		int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+		// enter while loop that can only be broken by going back to year view or
+		// exiting program
+		while (true) {
+
+			// display current month
+
+			displayMonth(date);
+
+			System.out.println("Press 1 to enter week selection");
+			System.out.println("Press 2 to select day selection");
+			System.out.println("Press 3 to exit back to year view");
+			System.out.println("Press q to exit program");
+
+			// ask for user input
+			try {
+				choice = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// evaluate user input
+			switch (choice.toLowerCase()) {
+
+			// week selection
+			case ("1"):
+				// get number of weeks
+				int numWeeks = monthDays[Integer.valueOf(monthInt) - 1] / 7;
+				// if there are remainder of days, then there's one more week
+				if (monthDays[Integer.valueOf(monthInt) - 1] % 7 > 0) {
+					numWeeks++;
+				}
+
+				String weekChoice = "";
+				// ask for user input for week index
+
+				System.out.println(
+						"Enter a number between 1 and " + numWeeks + " to select the corresponding week to view");
+				try {
+					weekChoice = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// input validation
+				while (Integer.valueOf(weekChoice) < 1 || Integer.valueOf(weekChoice) > numWeeks) {
+					System.out.println("That's an invaid week position. Try again");
+
+					System.out.println(
+							"Enter a number between 1 and " + numWeeks + " to select the corresponding week to view");
+					try {
+						weekChoice = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				// at this point we have a valid week position
+				int weekBeginningMonthDay = 7 * (Integer.valueOf(weekChoice) - 1) + 1;
+				String weekBeginningString = ((weekBeginningMonthDay < 10) ? "0": "") + String.valueOf(weekBeginningMonthDay);
+				System.out.println(weekBeginningString);
+
+				int weekBeginningDate = Integer.valueOf(String.valueOf(currentYear) + monthInt + weekBeginningString);
+				this.displayTasksforWeek(weekBeginningDate);
+				break;
+			}
+
+		}
+
+	}
+
+//displays year and months
+
+	public void displayYear() {
+
+		if (currentYear == null) {
+			System.out.println("No years in this current calendar, please create a year");
+		} else {
+
+			System.out.println("Year: " + currentYear);
+			System.out.println("JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC\n\n");
+		}
+	}
+
+//this just creates a new empty year
+	public void createYear() {
+		int calendarYearLength = this.calendar.scheduleList.size();
+		this.calendar.createYear(calendarYearLength + 2020);
+
+		if (this.calendar.scheduleList.size() == 1) {
+			currentYear = 2020;
+		}
+	}
+
+//displays month
+
+	public void displayMonth(int date) {
+		this.displayTasksforMonth(date);
+	}
+
+//this creat
 // Probably not staying
 // \/ \/ \/ \/
-class Menu {
-	String title;
-	ArrayList<Menu> options;
-	ArrayList<String> optionDescription;
-	Menu previousMenu;
+	class Menu {
+		String title;
+		ArrayList<Menu> options;
+		ArrayList<String> optionDescription;
+		Menu previousMenu;
 
-	public void testMenu() {
-		Menu main = new Menu("Main Menu");
-		Menu yearView = new Menu("Year View");
-		main.addMenuOption(yearView, "Year view");
-		main.linkPreviousMenu(null);
+		public void testMenu() {
+			Menu main = new Menu("Main Menu");
+			Menu yearView = new Menu("Year View");
+			main.addMenuOption(yearView, "Year view");
+			main.linkPreviousMenu(null);
+		}
+
+		public Menu(String newTitle) {
+			this.title = newTitle;
+		}
+
+		public void addMenuOption(Menu newMenuOption, String description) {
+			options.add(newMenuOption);
+			optionDescription.add(description);
+
+		}
+
+		public void removeMenuOption(int index) {
+			options.remove(index);
+			optionDescription.remove(index);
+		}
+
+		public void linkPreviousMenu(Menu prev) {
+			this.previousMenu = prev;
+		}
+
+		public void changeTitle(String newTitle) {
+			this.title = newTitle;
+		}
+
 	}
 
-	public Menu(String newTitle) {
-		this.title = newTitle;
+	class MenuOption {
+		String description;
 	}
-
-	public void addMenuOption(Menu newMenuOption, String description) {
-		options.add(newMenuOption);
-		optionDescription.add(description);
-
-	}
-
-	public void removeMenuOption(int index) {
-		options.remove(index);
-		optionDescription.remove(index);
-	}
-
-	public void linkPreviousMenu(Menu prev) {
-		this.previousMenu = prev;
-	}
-
-	public void changeTitle(String newTitle) {
-		this.title = newTitle;
-	}
-
-}
-
-class MenuOption {
-	String description;
-
 }

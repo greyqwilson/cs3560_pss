@@ -17,7 +17,7 @@ public class Calendar {
 	public Calendar() {
 		scheduleList = new ArrayList<ArrayList<Schedule>>();
 		// initialize monthAndDayList
-		display = new Display(null);
+//		display = new Display(null);
 
 		scheduleModel = new ScheduleModel();
 	}
@@ -1083,7 +1083,6 @@ public class Calendar {
 	// returns arraylist of arraylists containing tasks for a week
 	public Schedule[] getTasksForWeek(int date) {
 		//assume that the start of each year resets the day of week to sunday
-		System.out.println(date);
 		//get number of days from beginning of year
 		int numOfDays = this.numOfDaysFromYearBeginning(date);
 		//get the num of days of the ending of the week before the current one
