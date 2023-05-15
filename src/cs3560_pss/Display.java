@@ -14,6 +14,9 @@ import org.json.simple.parser.ParseException;
 import java.util.ArrayList;
 import java.text.StringCharacterIterator;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 public class Display {
 
 	private Calendar calendar;
@@ -24,10 +27,138 @@ public class Display {
 		this.calendar = calendar;
 	}
 
+	public static void mainLoop(){
+		System.out.println("\t~~Personal Schedule System~~");
+		try (BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))){
+			mainMenu(keyboard);
+
+		}
+		catch (IOException e){
+			
+		}
+	}
+
+	public static void printMainMenu(){
+		System.out.println("\t ~~Main Menu~~");
+		System.out.println("1. Task Creator/Editor - Create a task, edit a task, or remove a task");
+		System.out.println("2. Display today's schedule");
+		System.out.println("3. Display this week's schedule");
+		System.out.println("4. Display this month's schedule");
+		System.out.println("5. Load a previously saved schedule");
+		System.out.println("6. Save the current schedule");
+		System.out.println("0. Exit");
+	}
+
+	public static void mainMenu(BufferedReader kb) throws IOException{
+		String choice = "-1";
+		while (!choice.matches("0")){
+			printMainMenu();
+			System.out.println("Please select a menu option:");
+			choice = kb.readLine();
+			switch (choice) {
+				case ("1"):
+					taskMenu(kb);
+					break;
+				case ("2"):
+					displayDayMenu(kb);
+					break;
+				case ("3"):
+					displayWeekMenu(kb);
+					break;
+				case ("4"):
+					displayMonthMenu(kb);
+					break;
+				case ("5"):
+					loadFileMenu(kb);
+					break;
+				case ("6"):
+					saveFileMenu(kb);
+					break;
+				case ("0"):
+					System.out.println("Thank you for using PSS!");
+					break;
+				default:
+					System.out.println("The menu option entered was not found.");
+					break;
+			}
+		}
+	}
+
+	public static void printTaskMenu(){
+		System.out.println("\t ~~Task Menu~~");
+		System.out.println("1. Create a task");
+		System.out.println("2. Edit a task");
+		System.out.println("3. Delete a task");
+		System.out.println("0. Return to the main menu");
+	}
+
+	public static void taskMenu(BufferedReader kb) throws IOException{
+		String choice = "-1";
+		while (!choice.matches("0")){
+			printTaskMenu();
+			System.out.println("Please select a menu option:");
+			choice = kb.readLine();
+			switch (choice) {
+				case ("1"):
+					taskMenuCreate(kb);
+					break;
+				case ("2"):
+					taskMenuEdit(kb);
+					break;
+				case ("3"):
+					taskMenuDelete(kb);
+					break;
+				case ("0"):
+					break;
+				default:
+					System.out.println("The menu option entered was not found.");
+					break;
+			}
+		}
+	}
+
+	public static void taskMenuCreate(BufferedReader kb) throws IOException{
+		System.out.println("\t --Creating a task--");
+		System.out.println("Please enter the name of the task: ");
+		String taskName = kb.readLine();
+		if (taskName.strip().length() == 0){
+			return;
+		}
+	}
+
+    public static void taskMenuEdit(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void taskMenuDelete(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void displayDayMenu(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void displayWeekMenu(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void displayMonthMenu(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void loadFileMenu(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
+    public static void saveFileMenu(BufferedReader kb){
+        System.out.println("Unimplemented");
+    }
+
 	public TaskActivity searchTask(String taskName) {
 		TaskActivity task = calendar.searchTask(taskName);
 		return task;
 	}
+
 
 
     public void loadScheduleFromFile() {
