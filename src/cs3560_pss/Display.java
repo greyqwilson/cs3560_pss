@@ -1066,8 +1066,15 @@ public class Display {
 		switch(choice.toLowerCase()) {
 		case ("1"):
 			break;
+		//This deletes the task and returns the user back to the day menu
 		case("2"):
-			break;
+			boolean deleteSuccess = this.calendar.deleteTask(task);
+				if(deleteSuccess) {
+				System.out.println("You've successfully deleted the task");
+				} else {
+				System.out.println("You were unable to delete this task");
+				}
+		return;
 		case("3"):
 			break;
 		case("4"):
