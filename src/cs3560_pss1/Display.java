@@ -1,3 +1,4 @@
+package cs3560_pss1;
 
 import java.io.File;
 import java.io.FileReader;
@@ -1306,6 +1307,10 @@ public class Display {
 					return;
 				}
 				
+				System.out.println("Start " + updateTask.getStartTime());
+				System.out.println("Duration " + updateTask.getDuration());
+				System.out.println("Endtime " + updateTask.getEndTime());
+
 				//attempt to update 
 				
 				boolean updateSuccess = this.calendar.updateTask(task, updateTask);
