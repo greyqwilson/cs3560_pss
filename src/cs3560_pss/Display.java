@@ -6,10 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+// import org.json.simple.JSONArray;
+// import org.json.simple.JSONObject;
+// import org.json.simple.parser.JSONParser;
+// import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.text.StringCharacterIterator;
@@ -261,7 +261,7 @@ public class Display {
 
 	// Create a string representation of a task
 	private static String formatTaskPrintout(String startTime, String title, String type, String description,
-			String endTime) {
+											String endTime) {
 		String separator = ("*----------------------------------------*\n");
 		// Start time ~~Title~~
 		String titleLine = String.format("|%-7s%3s~~%s~~", startTime, " ", title);
@@ -269,6 +269,9 @@ public class Display {
 
 		String typeLine = "|     (" + type + ")";
 		typeLine = formatTaskLine(typeLine, separator, true);
+
+		//String activityTypeLine = "|     (" + activityType + ")";
+		//activityTypeLine = formatTaskLine(activityTypeLine, separator, true);
 
 		String descriptionLine = "";
 		String descBody = "";
@@ -343,7 +346,7 @@ public class Display {
 				title = tasks.get(j).getName();
 				// Get j'th task of the day's end and start time
 				startTime = numberTimeToString(tasks.get(j).getStartTime(), false);
-				endTime = numberTimeToString(tasks.get(j).getStartTime(), false);
+				endTime = numberTimeToString(tasks.get(j).getEndTime(), false);
 
 				if (title.length() > MAXTITLELENGTH) {
 					title = title.substring(0, MAXTITLELENGTH).concat("..");
@@ -984,50 +987,50 @@ public class Display {
 				break;
 			case("4"):
 				TaskActivity[] tasks1;
-			tasks1 = calendar.getTasksForDay(date);
-			//if there are no tasks to delete, say so
-			if(tasks1.length == 0) {
-				System.out.println("There are no tasks to select");
-			} 
-			//if there are tasks to delete
-			else {
+				tasks1 = calendar.getTasksForDay(date);
+				//if there are no tasks to delete, say so
+				if(tasks1.length == 0) {
+					System.out.println("There are no tasks to select");
+				} 
+				//if there are tasks to delete
+				else {
 				
-				//ask user for position of task starting from 1 to delete
-				System.out.println("Choose the position of the task that you want to select within the list, in between 1 and " + tasks1.length);
-				
-				String taskPosition ="";
-				try {
-				 taskPosition = keyboard.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//validate task pos input
-				//if position is out of bounds
-				while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks1.length) {
+					//ask user for position of task starting from 1 to delete
+					System.out.println("Choose the position of the task that you want to select within the list, in between 1 and " + tasks1.length);
 					
-					System.out.println("Task position needs to be in between 1 and "  + tasks1.length);
-					System.out.println("Choose it again");
+					String taskPosition ="";
 					try {
-						 taskPosition = keyboard.readLine();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
+					taskPosition = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
+					//validate task pos input
+					//if position is out of bounds
+					while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks1.length) {
+						
+						System.out.println("Task position needs to be in between 1 and "  + tasks1.length);
+						System.out.println("Choose it again");
+						try {
+							taskPosition = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+						
+					}
+					
+					//convert to task index
+					
+					int taskIndex = Integer.parseInt(taskPosition) -1;
+					
+					//get task
+					TaskActivity task = tasks1[taskIndex];
+					
+					taskMenu(keyboard, task);
 				}
-				
-				//convert to task index
-				
-				int taskIndex = Integer.parseInt(taskPosition) -1;
-				
-				//get task
-				TaskActivity task = tasks1[taskIndex];
-				
-				taskMenu(keyboard, task);
-			}
 			
 			
 			case("5"):
@@ -1043,12 +1046,15 @@ public class Display {
 		//enter while loop that can only be exited by exiting to day menu or quiting program
 		while(true) {
 			
-			System.out.print(formatTaskPrintout((String.valueOf(task.getStartTime())), task.getName(),
-					task.getType(), "Description:", String.valueOf(task.getEndTime())));		
+			System.out.print(formatTaskPrintout((String.valueOf(task.getStartTime())), 
+												task.getName(),
+												task.getType(),
+												"", 
+												String.valueOf(task.getEndTime())));		
 		
 		System.out.println("Press 1 to update the task");
 		System.out.println("Press 2 to delete the task");
-		System.out.println("Press 3 to replace this task with an anti task (if it is recurring");
+		System.out.println("Press 3 to replace this task with an anti task (if it is recurring)");
 		System.out.println("Press 4 to exit to day menu");
 		System.out.println("Press q to quit program");
 		
@@ -1076,6 +1082,29 @@ public class Display {
 				}
 		return;
 		case("3"):
+			if (!task.isRecurringTask()){
+				System.out.println("This task is not recurring.");
+			}
+			else {
+				//Print out a list of days this
+				
+				try{
+					System.out.println("Enter the name of the task that will replace this:");
+					String titleStr = keyboard.readLine();
+					boolean taskMade = calendar.createTask(titleStr, task.getStartTime(), task.getDuration(), task.getDate(), "Cancellation", 0, 0, 0);
+					if (taskMade){
+						System.out.println("Task " + task.getName() + " for this day has been replaced successfully");
+						task = calendar.searchTask(titleStr);
+					}
+					else{
+						System.out.println("The task could not be replaced.");
+					}
+				}
+				catch (IOException e){
+					System.out.println(e.getStackTrace());
+				}
+
+			}
 			break;
 		case("4"):
 			return;
