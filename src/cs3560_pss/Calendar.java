@@ -1253,7 +1253,37 @@ public class Calendar {
 		return false;
 
 	}
+	// method that takes in a task and updates its corresponding tasks (if any ) to
+	// match it
+	public boolean updateTask(TaskActivity originalTask, TaskActivity newTask) {
 
+		// delete the original task
+
+		boolean deleteSuccess = this.deleteTask(originalTask);
+
+		// if successful, add in the new updated task
+		if (deleteSuccess) {
+
+			//grab additional recurring parameters if needed
+			boolean addSuccess = this.createTask(newTask.getName(), newTask.getStartTime(), newTask.getStartTime(),
+					newTask.getDate(), newTask.getType(),
+					(newTask.isRecurringTask()) ? ((RecurringTaskActivity) newTask).getFrequency() : 0,
+					(newTask.isRecurringTask()) ? ((RecurringTaskActivity) newTask).getStartDate() : 0,
+					(newTask.isRecurringTask()) ? ((RecurringTaskActivity) newTask).getEndDate() : 0);
+
+			//return if adding was successful
+			if(!addSuccess) {
+				this.restoreList();
+			}
+			return addSuccess;
+		}
+
+		//at this point, deleting the original task did not succeed
+		this.restoreList();
+		return false;
+
+	}
+	
 	// method that copies tasks over
 	public void restoreList() {
 		// stores reference to schedule model's schedule list
