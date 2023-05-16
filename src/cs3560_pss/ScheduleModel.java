@@ -85,7 +85,7 @@ public class ScheduleModel {
 
 						// create copy of recurring task link, link it to copy
 
-						TaskActivity currentTaskRecurring = ((AntiTaskActivity) taskCopy).getRecurring();
+						TaskActivity currentTaskRecurring = ((AntiTaskActivity) currentTask).getRecurring();
 
 						// get extra params
 						String recurName = currentTaskRecurring.getName();
