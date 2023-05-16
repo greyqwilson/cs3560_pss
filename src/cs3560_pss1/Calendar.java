@@ -1,4 +1,4 @@
-package cs3560_pss;
+package cs3560_pss1;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -1265,7 +1265,7 @@ public class Calendar {
 		if (deleteSuccess) {
 
 			//grab additional recurring parameters if needed
-			boolean addSuccess = this.createTask(newTask.getName(), newTask.getStartTime(), newTask.getStartTime(),
+			boolean addSuccess = this.createTask(newTask.getName(), newTask.getStartTime(), newTask.getDuration(),
 					newTask.getDate(), newTask.getType(),
 					(newTask.isRecurringTask()) ? ((RecurringTaskActivity) newTask).getFrequency() : 0,
 					(newTask.isRecurringTask()) ? ((RecurringTaskActivity) newTask).getStartDate() : 0,
