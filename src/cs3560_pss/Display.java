@@ -1,4 +1,3 @@
-package cs3560_pss;
 
 import java.io.File;
 import java.io.FileReader;
@@ -6,10 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-// import org.json.simple.JSONArray;
-// import org.json.simple.JSONObject;
-// import org.json.simple.parser.JSONParser;
-// import org.json.simple.parser.ParseException;
+import org.json.JSONWriter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.text.StringCharacterIterator;
@@ -162,66 +162,129 @@ public class Display {
 		return task;
 	}
 
-//	public void loadScheduleFromFile() {
-//		Schedule schedFromFile;
-//		JSONParser parser = new JSONParser();
-//
-//		/*
-//		 * TODO
-//		 * 
-//		 * 1.) Filepath Parameter 2.) Conditional Statements for different task types
-//		 * 3.) Return type? a.) Attributes b.) Tasks c.) Array of Tasks 4.) Make sure
-//		 * everyone can run it.
-//		 * 
-//		 */
-//
+	public void loadScheduleFromFile() {
+		Schedule schedFromFile;
+		JSONParser parser = new JSONParser();
+
+		/*
+		 * TODO
+		 * 
+		 * 1.) Filepath Parameter 2.) Conditional Statements for different task types
+		 * 3.) Return type? a.) Attributes b.) Tasks c.) Array of Tasks 4.) Make sure
+		 * everyone can run it.
+		 * 
+		 */
+
+		try {
+			JSONArray a = (JSONArray) parser.parse(new FileReader("20200101.json")); // need a method for filepath
+
+			for (int i = 0; i < a.size(); i++) {
+				JSONObject task = (JSONObject) a.get(i);
+
+				String taskName = (String) task.get("Name");
+
+				String taskType = (String) task.get("Type");
+
+				Double taskStartDate = (Double) task.get("StartDate");
+
+				Double taskStartTime = (Double) task.get("StartTime");
+
+				Double taskDuration = (Double) task.get("Duration");
+
+				Long taskEndDate = (Long) task.get("EndDate");
+
+				Long taskFrequency = (Long) task.get("Frequency");
+
+				System.out.println(taskName);
+				System.out.println(taskType);
+				System.out.println(taskStartDate);
+				System.out.println(taskStartTime);
+				System.out.println(taskDuration);
+				System.out.println(taskEndDate);
+				System.out.println(taskFrequency);
+			}
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Copy relevant data to a schedule object
+		// Pass into whoever takes it and display
+
+	}
+
+	public void writeScheduleToFile(TaskActivity[] tasks) {
+		//JSONObject jsonScheduleObj = new JSONObject();
+		//ArrayList<TaskActivity> tasks = schedule.getTaskList();
+		JSONArray jsonTaskObj = new JSONArray();
+		for (TaskActivity task : tasks) {
+			JSONObject jsonObj = new JSONObject();
+			if (task.isRecurringTask()) {
+				jsonObj.put("Name", task.getName());
+				jsonObj.put("Type", task.getType());
+				jsonObj.put("StartTime", task.getStartTime());
+				jsonObj.put("Duration", task.getDuration());
+				jsonObj.put("Date", task.getDate());
+				jsonObj.put("StartDate", ((RecurringTaskActivity) task).getStartDate());
+				jsonObj.put("EndDate", ((RecurringTaskActivity) task).getEndDate());
+				jsonObj.put("Frequency", ((RecurringTaskActivity) task).getFrequency());
+				jsonTaskObj.add(jsonObj);
+			}
+			
+			//It is a taskactivity or anti-task
+			else {
+				jsonObj.put("Name", task.getName());
+				jsonObj.put("Type", task.getType());
+				jsonObj.put("StartTime", task.getStartTime());
+				jsonObj.put("Duration", task.getDuration());
+				jsonObj.put("Date", task.getDate());
+				jsonTaskObj.add(jsonObj);
+			}
+			
+//			jsonScheduleObj.put("Date", tasks[0].getDate());
+//			jsonScheduleObj.put("TaskList", jsonTaskObj);
+		}
+		String date = "";
+		try {
+			date = String.valueOf(tasks[0].getDate());
+			FileWriter fw = new FileWriter(String.valueOf(tasks[0].getDate()) + ".json");
+			String jsonString = jsonTaskObj.toJSONString();
+			
+			fw.append(jsonString);
+			fw.close();
+			//fw.write(jsonString);
+			System.out.println(jsonString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Something went wrong creating file writer");
+			e.printStackTrace();
+		}
+		
+		//Read object
 //		try {
-//			JSONArray a = (JSONArray) parser.parse(new FileReader("")); // need a method for filepath
-//
-//			for (int i = 0; i < a.size(); i++) {
-//				JSONObject task = (JSONObject) a.get(i);
-//
-//				String taskName = (String) task.get("Name");
-//
-//				String taskType = (String) task.get("Type");
-//
-//				Long taskStartDate = (Long) task.get("StartDate");
-//
-//				Long taskStartTime = (Long) task.get("StartTime");
-//
-//				Double taskDuration = (Double) task.get("Duration");
-//
-//				Long taskEndDate = (Long) task.get("EndDate");
-//
-//				Long taskFrequency = (Long) task.get("Frequency");
-//
-//				System.out.println(taskName);
-//				System.out.println(taskType);
-//				System.out.println(taskStartDate);
-//				System.out.println(taskStartTime);
-//				System.out.println(taskDuration);
-//				System.out.println(taskEndDate);
-//				System.out.println(taskFrequency);
+//			FileReader fr = new FileReader(date + ".json");
+//			JSONParser parser = new JSONParser();
+//			JSONObject scheduleJson = (JSONObject) parser.parse(fr);
+//			System.out.println(scheduleJson.toJSONString());
+//			
+//			JSONArray tasklistJson = (JSONArray) parser.parse(scheduleJson.toString());
+//			System.out.println(tasklistJson.toJSONString());
+//			for (int i=0; i<tasklistJson.size(); i++) {
+//				JSONObject taskJson = (JSONObject) parser.parse(tasklistJson.toJSONString());
+//				System.out.println(taskJson.toJSONString());
 //			}
-//
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
+			
+//		}
+//		catch (Exception e){
 //			e.printStackTrace();
 //		}
-//
-//		// Copy relevant data to a schedule object
-//		// Pass into whoever takes it and display
-//
-//	}
-
-	public void writeScheduleToFile() {
-
 	}
 
 	public void displayTasksforDay(int date) {
@@ -230,8 +293,7 @@ public class Display {
 		
 		System.out.println(TaskActivity.getYear(date) + "/" + TaskActivity.getMonth(date) + "/" + TaskActivity.getDay(date));
 		for (int i = 0; i < tasks.length; i++) {
-			System.out.print(formatTaskPrintout((String.valueOf(tasks[i].getStartTime())), tasks[i].getName(),
-					tasks[i].getType(), "Description:", String.valueOf(tasks[i].getEndTime())));
+			System.out.print(formatTaskPrintout(tasks[i]));
 		}
 	}
 
@@ -260,8 +322,12 @@ public class Display {
 	}
 
 	// Create a string representation of a task
-	private static String formatTaskPrintout(String startTime, String title, String type, String description,
-											String endTime) {
+	private static String formatTaskPrintout(TaskActivity task) {
+		String startTime = numberTimeToString(task.getStartTime(), false);
+		String title = task.getName();
+		String type = task.getType();
+		String endTime = numberTimeToString(task.getEndTime(), false);
+
 		String separator = ("*----------------------------------------*\n");
 		// Start time ~~Title~~
 		String titleLine = String.format("|%-7s%3s~~%s~~", startTime, " ", title);
@@ -273,36 +339,36 @@ public class Display {
 		//String activityTypeLine = "|     (" + activityType + ")";
 		//activityTypeLine = formatTaskLine(activityTypeLine, separator, true);
 
-		String descriptionLine = "";
-		String descBody = "";
-		int descLines = description.length() / separator.length() + 1;
-		StringCharacterIterator iterator = new StringCharacterIterator(description);
-		if (iterator.first() != StringCharacterIterator.DONE) {
-			descriptionLine = descriptionLine.concat("|     -" + String.valueOf(iterator.first()));
-			for (int i = 0; i <= descLines; i++) {
-				if (i != 0)
-					descriptionLine = descriptionLine.concat("|     ");
-				char c;
-				for (int j = 0; j < 33; j++) {
-					c = iterator.next();
-					if (c != StringCharacterIterator.DONE)
-						descriptionLine = descriptionLine.concat(String.valueOf(c));
-					else
-						j = 34;
-				}
-				descriptionLine = formatTaskLine(descriptionLine, separator, true);
-				descBody = descBody.concat(descriptionLine);
-				descriptionLine = "";
-			}
-		} else {
-			descBody = "|";
-			descBody = formatTaskLine(descBody, separator, true);
-		}
+		//String descriptionLine = "";
+		//String descBody = "";
+		//int descLines = description.length() / separator.length() + 1;
+		// StringCharacterIterator iterator = new StringCharacterIterator(description);
+		// if (iterator.first() != StringCharacterIterator.DONE) {
+		// 	descriptionLine = descriptionLine.concat("|     -" + String.valueOf(iterator.first()));
+		// 	for (int i = 0; i <= descLines; i++) {
+		// 		if (i != 0)
+		// 			descriptionLine = descriptionLine.concat("|     ");
+		// 		char c;
+		// 		for (int j = 0; j < 33; j++) {
+		// 			c = iterator.next();
+		// 			if (c != StringCharacterIterator.DONE)
+		// 				descriptionLine = descriptionLine.concat(String.valueOf(c));
+		// 			else
+		// 				j = 34;
+		// 		}
+		// 		descriptionLine = formatTaskLine(descriptionLine, separator, true);
+		// 		descBody = descBody.concat(descriptionLine);
+		// 		descriptionLine = "";
+		// 	}
+		// } else {
+		// 	descBody = "|";
+		// 	descBody = formatTaskLine(descBody, separator, true);
+		// }
 		// descriptionLine = formatTaskLine(descriptionLine, separator);
 
 		String endTimeLine = "|" + endTime;
 		endTimeLine = formatTaskLine(endTimeLine, separator, true);
-		String s = separator + titleLine + typeLine + descBody + endTimeLine + separator;
+		String s = separator + titleLine + typeLine + endTimeLine + separator;
 		return s;
 	}
 
@@ -914,7 +980,9 @@ public class Display {
 			System.out.println("Press 2 to update a task");
 			System.out.println("Press 3 to delete a task");
 			System.out.println("Press 4 to select a task");
-			System.out.println("Press 5 to go back to month view");
+			System.out.println("Press 5 to save day schedule to file");
+			System.out.println("Press 6 to load day schedule from file");
+			System.out.println("Press 7 to go back to month view");
 			String choice = "";
 			
 			//ask for user input
@@ -1032,8 +1100,16 @@ public class Display {
 					taskMenu(keyboard, task);
 				}
 			
-			
 			case("5"):
+				TaskActivity[] tasks2 = calendar.getTasksForDay(date);
+				writeScheduleToFile(tasks2);
+				break;
+			
+			case("6"):
+				loadScheduleFromFile();
+				break;
+				
+			case("7"):
 				return;
 			}
 		}
@@ -1046,11 +1122,7 @@ public class Display {
 		//enter while loop that can only be exited by exiting to day menu or quiting program
 		while(true) {
 			
-			System.out.print(formatTaskPrintout((String.valueOf(task.getStartTime())), 
-												task.getName(),
-												task.getType(),
-												"", 
-												String.valueOf(task.getEndTime())));		
+			System.out.print(formatTaskPrintout(task));		
 		
 		System.out.println("Press 1 to update the task");
 		System.out.println("Press 2 to delete the task");
