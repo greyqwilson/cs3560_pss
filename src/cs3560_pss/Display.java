@@ -927,6 +927,63 @@ public class Display {
 			case("1"):
 				createTaskMenu(keyboard, month, date);
 				break;
+			case("3"):
+				TaskActivity[] tasks;
+				tasks = calendar.getTasksForDay(date);
+				//if there are no tasks to delete, say so
+				if(tasks.length == 0) {
+					System.out.println("There are no tasks to delete");
+				} 
+				//if there are tasks to delete
+				else {
+					
+					//ask user for position of task starting from 1 to delete
+					System.out.println("Choose the position of the task that you want to remove within the list, in between 1 and " + tasks.length);
+					
+					String taskPosition ="";
+					try {
+					 taskPosition = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//validate task pos input
+					//if position is out of bounds
+					while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks.length) {
+						
+						System.out.println("Task position needs to be in between 1 and "  + tasks.length);
+						System.out.println("Choose it again");
+						try {
+							 taskPosition = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+						
+					}
+					
+					//convert to task index
+					
+					int taskIndex = Integer.parseInt(taskPosition) -1;
+					
+					//get task
+					TaskActivity task = tasks[taskIndex];
+					System.out.println(task);
+					
+					//attempt to delete
+					boolean deleteSuccess = this.calendar.deleteTask(task);
+					
+					if(deleteSuccess) {
+						System.out.println("You've successfully deleted the task");
+					} else {
+						System.out.println("You were unable to delete this task");
+					}
+				}
+				break;
+				
+			
 			
 			case("4"):
 				return;

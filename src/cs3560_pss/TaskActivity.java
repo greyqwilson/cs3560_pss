@@ -81,7 +81,7 @@ public class TaskActivity{
     public boolean isRecurringTask(){
     	
     	for(int i = 0; i < 6; i++) {
-    		if(this.type == recurringTaskTypes[i]) {
+    		if(this.type.toLowerCase().equals(recurringTaskTypes[i].toLowerCase())) {
     			return true;
     		}
     	}
@@ -93,7 +93,7 @@ public class TaskActivity{
     public boolean isTransientTask() {
     	
     	for(int i = 0; i < 3; i++) {
-    		if(this.type == transientTaskTypes[i]) {
+    		if(this.type.toLowerCase().equals(transientTaskTypes[i].toLowerCase())) {
     			return true;
     		}
     	}
@@ -104,7 +104,7 @@ public class TaskActivity{
     
     public boolean isAntiTask() {
     	
-    	if(this.type == antiTaskType) {
+    	if(this.type.toLowerCase().equals(antiTaskType.toLowerCase())) {
     		return true;
     	}
     	

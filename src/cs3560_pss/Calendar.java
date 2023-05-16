@@ -710,6 +710,7 @@ public class Calendar {
 		boolean isAnti = task.isAntiTask();
 		boolean isTransient = task.isTransientTask();
 
+
 		/*-----this is used only for anti and transient tasks------------------*/
 		// get year, month, day of task
 		int year = TaskActivity.getYear(removeTask.getDate());
@@ -772,7 +773,6 @@ public class Calendar {
 			// iterations
 
 			int currentNumDays = 0;
-
 			// iterate from the year of start date to the year of the end date
 			for (int currentYearIndex = startYearIndex; currentYearIndex <= endYearIndex; currentYearIndex++) {
 
@@ -781,16 +781,17 @@ public class Calendar {
 				// to either the end // of the year OR the end date if we're in the same year
 				for (int currentDay = (currentYearIndex == startYearIndex ? startDayIndex
 						: 0); currentDay <= (currentYearIndex == endYearIndex ? endDayIndex : 364); currentDay++) {
-
+					
+				
+					
 					// if the current number of days can be divided by frequency, then there should
 					// be an iteration of the recurring task OR an anti task on this day
 					if (currentNumDays % frequency == 0) {
-
 						// get the current Schedule
 						Schedule currentSchedule = scheduleList.get(currentYearIndex).get(currentDay);
 						// get task list
 						ArrayList<TaskActivity> recurringTaskList = currentSchedule.getTaskList();
-
+						
 						// search for a Recurring Task with the same name, type, start time duration,
 						// and its position
 						int recurringPosition = -1;
@@ -802,7 +803,6 @@ public class Calendar {
 						for (int i = 0; i < recurringTaskList.size(); i++) {
 
 							TaskActivity currentTask = recurringTaskList.get(i);
-
 							// if current task matches recurring search, record position
 							if (currentTask.isRecurringTask() && currentTask.getName() == removeTask.getName()
 									&& currentTask.getType() == removeTask.getType()
@@ -1088,7 +1088,6 @@ public class Calendar {
 		
 		//get index of current year
 		int yearIndex = TaskActivity.getYear(date) - 2020;
-		System.out.println(yearIndex);
 		//Array of schedules to store week's tasks
 		//is the size of the remainder of the year or 7 days if there's enough days left
 		Schedule[] weekSchedules = new Schedule[((lastWeekEnding + 7) >= 365 ? 365 - lastWeekEnding : 7)];
