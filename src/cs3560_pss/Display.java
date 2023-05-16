@@ -336,6 +336,32 @@ public class Display {
 		String typeLine = "|     (" + type + ")";
 		typeLine = formatTaskLine(typeLine, separator, true);
 
+		if (task.isRecurringTask()){
+			int startDate = ((RecurringTaskActivity) task).getStartDate();
+			int endDate = ((RecurringTaskActivity) task).getEndDate();
+			String startDateStr = TaskActivity.getYear(startDate) + "/" + TaskActivity.getMonth(startDate) + "/" + TaskActivity.getDay(startDate);
+			String startDateLine = "|     " + "From:" + startDateStr;
+			startDateLine = formatTaskLine(startDateLine, separator, true);
+
+			String endDateStr = (TaskActivity.getYear(endDate) + "/" + TaskActivity.getMonth(endDate) + "/" + TaskActivity.getDay(endDate));
+			String endDateLine = "|     " + "To:" + endDateStr;
+			endDateLine = formatTaskLine(endDateLine, separator, true);
+
+			String frequencyLine = ((RecurringTaskActivity) task).getFrequency() == 1 ? "|     daily" : "|     weekly";
+			frequencyLine = formatTaskLine(frequencyLine, separator, true);
+			
+			String endTimeLine = "|" + endTime;
+			endTimeLine = formatTaskLine(endTimeLine, separator, true);
+			String s = separator + titleLine + typeLine + startDateLine + endDateLine + frequencyLine + endTimeLine + separator;
+			return s;
+		}
+		else {
+			String endTimeLine = "|" + endTime;
+			endTimeLine = formatTaskLine(endTimeLine, separator, true);
+			String s = separator + titleLine + typeLine + endTimeLine + separator;
+			return s;
+		}
+
 		//String activityTypeLine = "|     (" + activityType + ")";
 		//activityTypeLine = formatTaskLine(activityTypeLine, separator, true);
 
@@ -365,11 +391,6 @@ public class Display {
 		// 	descBody = formatTaskLine(descBody, separator, true);
 		// }
 		// descriptionLine = formatTaskLine(descriptionLine, separator);
-
-		String endTimeLine = "|" + endTime;
-		endTimeLine = formatTaskLine(endTimeLine, separator, true);
-		String s = separator + titleLine + typeLine + endTimeLine + separator;
-		return s;
 	}
 
 	private static String formatWeekTasks(Schedule[] schedules) {
