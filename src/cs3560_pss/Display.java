@@ -910,7 +910,8 @@ public class Display {
 			System.out.println("Press 1 to create a task");
 			System.out.println("Press 2 to update a task");
 			System.out.println("Press 3 to delete a task");
-			System.out.println("Press 4 to go back to month view");
+			System.out.println("Press 4 to select a task");
+			System.out.println("Press 5 to go back to month view");
 			String choice = "";
 			
 			//ask for user input
@@ -970,7 +971,6 @@ public class Display {
 					
 					//get task
 					TaskActivity task = tasks[taskIndex];
-					System.out.println(task);
 					
 					//attempt to delete
 					boolean deleteSuccess = this.calendar.deleteTask(task);
@@ -982,17 +982,107 @@ public class Display {
 					}
 				}
 				break;
-				
-			
-			
 			case("4"):
+				TaskActivity[] tasks1;
+			tasks1 = calendar.getTasksForDay(date);
+			//if there are no tasks to delete, say so
+			if(tasks1.length == 0) {
+				System.out.println("There are no tasks to select");
+			} 
+			//if there are tasks to delete
+			else {
+				
+				//ask user for position of task starting from 1 to delete
+				System.out.println("Choose the position of the task that you want to select within the list, in between 1 and " + tasks1.length);
+				
+				String taskPosition ="";
+				try {
+				 taskPosition = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//validate task pos input
+				//if position is out of bounds
+				while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks1.length) {
+					
+					System.out.println("Task position needs to be in between 1 and "  + tasks1.length);
+					System.out.println("Choose it again");
+					try {
+						 taskPosition = keyboard.readLine();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					
+				}
+				
+				//convert to task index
+				
+				int taskIndex = Integer.parseInt(taskPosition) -1;
+				
+				//get task
+				TaskActivity task = tasks1[taskIndex];
+				
+				taskMenu(keyboard, task);
+			}
+			
+			
+			case("5"):
 				return;
 			}
 		}
 		
 	}
 	
-	
+	// this is for displaying one task and the possible actions 
+	public void taskMenu(BufferedReader keyboard, TaskActivity task) {
+		
+		//enter while loop that can only be exited by exiting to day menu or quiting program
+		while(true) {
+			
+			System.out.print(formatTaskPrintout((String.valueOf(task.getStartTime())), task.getName(),
+					task.getType(), "Description:", String.valueOf(task.getEndTime())));		
+		
+		System.out.println("Press 1 to update the task");
+		System.out.println("Press 2 to delete the task");
+		System.out.println("Press 3 to replace this task with an anti task (if it is recurring");
+		System.out.println("Press 4 to exit to day menu");
+		System.out.println("Press q to quit program");
+		
+		
+		System.out.println("Enter your choice");
+		String choice = "";
+		try {
+			choice = keyboard.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		switch(choice.toLowerCase()) {
+		case ("1"):
+			break;
+		case("2"):
+			break;
+		case("3"):
+			break;
+		case("4"):
+			return;
+		case("q"):
+			System.exit(0);
+		default:
+			System.out.println("Invalid choice");
+			
+		}
+		
+		
+		}
+		
+	}
 	
 	//create task menu, this is only for when we're adding recurring or transient
 	public void createTaskMenu(BufferedReader keyboard, String month, int date) {
