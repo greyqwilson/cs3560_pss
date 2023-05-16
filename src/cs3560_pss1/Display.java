@@ -1307,10 +1307,6 @@ public class Display {
 					return;
 				}
 				
-				System.out.println("Start " + updateTask.getStartTime());
-				System.out.println("Duration " + updateTask.getDuration());
-				System.out.println("Endtime " + updateTask.getEndTime());
-
 				//attempt to update 
 				
 				boolean updateSuccess = this.calendar.updateTask(task, updateTask);
