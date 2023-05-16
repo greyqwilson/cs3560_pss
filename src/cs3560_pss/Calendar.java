@@ -227,7 +227,7 @@ public class Calendar {
 
 	// creates a task and inserts it into a schedule's tasklist, takes in task
 	// arguments
-	public boolean createTask(String name, int startTime, int duration, int date, String typeString, int frequency,
+	public boolean createTask(String name, double startTime, double duration, int date, String typeString, int frequency,
 			int startDate, int endDate) {
 
 		String[] recurringTaskTypes = { "Class", "Study", "Sleep", "Exercise", "Work", "Meal" };
@@ -256,9 +256,8 @@ public class Calendar {
 		}
 
 		if (typeString.toLowerCase().equals(antiTaskType.toLowerCase())) {
-			isRecurring = true;
+			isAnti = true;
 		}
-		
 
 		if (isRecurring) {
 			
@@ -292,16 +291,14 @@ public class Calendar {
 				for (int currentDay = (currentYearIndex == startYearIndex ? startDayIndex
 						: 0); currentDay <= (currentYearIndex == endYearIndex ? endDayIndex : 364); currentDay++) {
 
-				
 					
 					// if the current number of days can be divided by frequency, then there should
 					// be an iteration of the recurring task on this day
 					if (currentNumDays % frequency == 0) {
 						
-						
 						String currentTaskYear = String.valueOf(currentYearIndex+ 2020) ;
 						String currentTaskMonth =  (this.calculateMonthFromDays(currentDay + 1) < 10 ? "0" : "" ) +String.valueOf( this.calculateMonthFromDays(currentDay + 1));
-						String currentTaskDay = ((currentDay + 1) < 10 ? "0" : "" ) +String.valueOf(currentDay + 1);
+						String currentTaskDay = ((this.calculateDayOfMonthFromNumDays(currentDay + 1)) < 10 ? "0" : "" ) +String.valueOf(this.calculateDayOfMonthFromNumDays(currentDay + 1));
 						int currentDate = Integer.parseInt( currentTaskYear + currentTaskMonth + currentTaskDay);
 						
 						
@@ -1177,7 +1174,7 @@ public class Calendar {
 		int yearIndex = year - 2020;
 		int beginningOfMonth = this.calculateMonthBeginning(month);
 		int dayIndex = beginningOfMonth + day - 1;
-
+		
 		// get the tasklist of the schedule of the day
 		Schedule schedule = this.scheduleList.get(yearIndex).get(dayIndex);
 

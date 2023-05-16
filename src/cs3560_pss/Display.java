@@ -224,15 +224,17 @@ public class Display {
 
 	}
 
-//	public void displayTasksforDay() {
-//		TaskActivity[] tasks;
-//		tasks = calendar.getTasksForDay(currentDay);
-//		for (int i = 0; i < tasks.length; i++) {
-//			System.out.print(formatTaskPrintout((String.valueOf(tasks[i].getStartTime())), tasks[i].getName(),
-//					tasks[i].getType(), "Description:", String.valueOf(tasks[i].getEndTime())));
-//		}
-//	}
-//
+	public void displayTasksforDay(int date) {
+		TaskActivity[] tasks;
+		tasks = calendar.getTasksForDay(date);
+		
+		System.out.println(TaskActivity.getYear(date) + "/" + TaskActivity.getMonth(date) + "/" + TaskActivity.getDay(date));
+		for (int i = 0; i < tasks.length; i++) {
+			System.out.print(formatTaskPrintout((String.valueOf(tasks[i].getStartTime())), tasks[i].getName(),
+					tasks[i].getType(), "Description:", String.valueOf(tasks[i].getEndTime())));
+		}
+	}
+
 	public void displayTasksforWeek(int date) {
 		Schedule[] weekSchedule;
 		weekSchedule = calendar.getTasksForWeek(date);
@@ -594,6 +596,7 @@ public class Display {
 		return timeString;
 	}
 
+	// takes in number month, returns abbreviation
 	private static String numberMonthToString(String monthNum) {
 		switch (monthNum) {
 		case ("01"):
@@ -625,8 +628,9 @@ public class Display {
 		}
 	}
 
-	private static String monthStringToIntString(String monthNum) {
-		switch (monthNum) {
+//takes in month abbreviation, returns corresponding int version
+	private static String monthStringToIntString(String monthString) {
+		switch (monthString.toString()) {
 		case ("jan"):
 			return ("01");
 		case ("feb"):
@@ -839,18 +843,366 @@ public class Display {
 
 				// at this point we have a valid week position
 				int weekBeginningMonthDay = 7 * (Integer.valueOf(weekChoice) - 1) + 1;
-				String weekBeginningString = ((weekBeginningMonthDay < 10) ? "0": "") + String.valueOf(weekBeginningMonthDay);
+				String weekBeginningString = ((weekBeginningMonthDay < 10) ? "0" : "")
+						+ String.valueOf(weekBeginningMonthDay);
 				System.out.println(weekBeginningString);
 
 				int weekBeginningDate = Integer.valueOf(String.valueOf(currentYear) + monthInt + weekBeginningString);
+				System.out.println("\n\n");
 				this.displayTasksforWeek(weekBeginningDate);
+				System.out.println("\n\n");
 				break;
+
+			// entering day selection
+			case ("2"):
+				int numDaysInMonth = monthDays[Integer.valueOf(monthInt) - 1];
+				String dayChoice = "";
+				// ask for user input for day index
+
+				System.out.println("Enter a number between 1 and " + numDaysInMonth
+						+ " to select the corresponding month day to view");
+				try {
+					dayChoice = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// input validation
+				while (Integer.valueOf(dayChoice) < 1 || Integer.valueOf(dayChoice) > numDaysInMonth) {
+					System.out.println("That's an invaid day of month position. Try again");
+
+					System.out.println("Enter a number between 1 and " + numDaysInMonth
+							+ " to select the corresponding month day to view");
+					try {
+						dayChoice = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				// formats day int, adds 0 if single digit
+				String dayInt = ((Integer.valueOf(dayChoice) < 10) ? "0" : "") + String.valueOf(dayChoice);
+
+				// enter day menu
+				dayMenu(keyboard, monthInt, dayInt);
+				break;
+				// returning to year menu
+			case ("3"):
+				return;
+			case ("q"):
+				System.exit(0);
 			}
 
 		}
 
 	}
 
+	// day menu
+
+	public void dayMenu(BufferedReader keyboard, String month, String day) {
+		int date = Integer.valueOf(String.valueOf(currentYear) + month + day);
+		//enter while loop that can only be exited by quitting program or exiting back to month view
+		while(true) {
+			//display the day and its tasks
+			this.displayTasksforDay(date);
+			
+			System.out.println("Press 1 to create a task");
+			System.out.println("Press 2 to update a task");
+			System.out.println("Press 3 to delete a task");
+			System.out.println("Press 4 to go back to month view");
+			String choice = "";
+			
+			//ask for user input
+			try {
+				choice = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//user input evaluation
+			switch(choice) {
+			
+			case("1"):
+				createTaskMenu(keyboard, month, date);
+				break;
+			
+			case("4"):
+				return;
+			}
+		}
+		
+	}
+	
+	
+	
+	//create task menu, this is only for when we're adding recurring or transient
+	public void createTaskMenu(BufferedReader keyboard, String month, int date) {
+		String name = ""; double startTime=0; double duration = 0; String typeString = ""; int frequency = 0;
+		int startDate =0; int endDate =0;		
+		
+		int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+		boolean isRecurring = false;
+		boolean isTransient = false;
+		String[] recurringTaskTypes = { "Class", "Study", "Sleep", "Exercise", "Work", "Meal" };
+
+		String[] transientTaskTypes = { "Visit", "Shopping", "Appointment" };
+		
+		//ask until user enters a valid type
+		while(!isRecurring && !isTransient) {
+			System.out.println("Please input the type of the task, choose between recurring or transient types");
+			System.out.println("Recurring Types: Class, Study, Sleep, Exercise, Work, Meal");
+			System.out.println("Transient Types: Visit, Shopping, Appointment");
+			
+			//ask for type 
+			try {
+				typeString = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//look if type is valid
+			for (int i = 0; i < recurringTaskTypes.length; i++) {
+				if (typeString.toLowerCase().equals(recurringTaskTypes[i].toLowerCase())) {
+					isRecurring = true;
+				}
+			}
+
+			for (int i = 0; i < transientTaskTypes.length; i++) {
+			
+
+				if (typeString.toLowerCase().equals(transientTaskTypes[i].toLowerCase())  ) {
+					isTransient = true;
+				}
+			}
+
+			
+		}
+	
+		
+		//ask for the name
+		System.out.println("Enter the name");
+		try {
+			name = keyboard.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		//ask for the start time
+		String startTimeString = "";
+		System.out.println("Enter start time");
+		try {
+			startTimeString = keyboard.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//input validation, start time is in between 0 and 23.75
+		while( !(Double.parseDouble(startTimeString) % .25 == 0) && (Double.parseDouble(startTimeString) < 0 || Double.parseDouble(startTimeString) > 23.75) ) {
+			System.out.println("Start time needs to be in between 0 and 23.75");
+			try {
+				startTimeString = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		//at this point, start time has been validated, so store start time in double form
+		startTime = Double.parseDouble(startTimeString);
+		
+		
+		
+		//ask for duration
+				String durationString = "";
+				System.out.println("Enter duration time");
+				try {
+					durationString = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//input validation, start time is in between 0 and 23.75
+				while( !(Double.parseDouble(durationString) % .25 == 0) && (Double.parseDouble(durationString) < 0 || Double.parseDouble(durationString) > 23.75) ) {
+					System.out.println("Duration needs to be in between 0 and 23.75");
+					try {
+						durationString = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+				
+				//at this point, duration has been validated, so store duration in double form
+				startTime = Double.parseDouble(durationString);
+				
+				
+				
+		//if its recurring, ask for frequency, start date, and end date;
+		if(isRecurring) {
+			
+			
+			//ask for frequency
+			
+			String frequencyString = "";
+			
+			System.out.println("Enter frequency, needs to be 1 or 7");
+			try {
+				frequencyString = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//input validation
+			
+			while(Integer.parseInt(frequencyString) != 7 && Integer.parseInt(frequencyString) != 1) {
+				System.out.println("That's an invalid frequency");
+				System.out.println("Enter frequency, needs to be 1 or 7");
+				try {
+					frequencyString = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			
+			//at this point we've validated frequency, store in int form
+			
+			frequency = Integer.parseInt(frequencyString);
+			
+			//assume start date is the current date;
+			
+			//ask for end date
+			System.out.println("Enter the date you want this recurring task to stop");
+			
+			//ask for end year
+			System.out.println("Enter the year");
+			String endYear = "";
+			try {
+				endYear = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//validate year input
+			
+			while(Integer.parseInt(endYear) < 2020 || Integer.parseInt(endYear) < currentYear) {
+				System.out.println("That's an invalid year, needs to be 2020 or later and equal or greater to the current year");
+				endYear = "";
+				try {
+					endYear = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			
+			//ask for end month
+			
+			String endMonth = "";
+			
+			System.out.println("Enter the month of the end date, using the abbreviations below:"
+					+ "\nJAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC");
+			try {
+				endMonth = keyboard.readLine().toLowerCase();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//validate month input
+			//error if end month is lower than current month and we're in same year
+			if( (Integer.parseInt(endYear) == currentYear && Integer.parseInt(Display.monthStringToIntString(endMonth)) < Integer.parseInt(month)  )
+					||
+					(Integer.parseInt(Display.monthStringToIntString(endMonth)) <= 0 || Integer.parseInt(Display.monthStringToIntString(endMonth)) > 12)) {
+				System.out.println("The month cannot lower than the current month if we're in the same year, and it needs to be in between 1 and 12");
+				System.out.println("Enter the month of the end date, using the abbreviations below:"
+						+ "\nJAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC");		
+				try {
+					endMonth = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			//format the month string
+			endMonth = (Integer.parseInt(Display.monthStringToIntString(endMonth)) < 10 ? "0" : "") + Integer.parseInt(Display.monthStringToIntString(endMonth));
+			
+			
+			//ask for end day
+			int numMonthDays = monthDays[Integer.parseInt(endMonth) -1];
+
+			String endDay = "";
+			System.out.println("Enter the day of the end month, needs to be inbetween 1 and " + numMonthDays);
+			
+			try {
+				endDay = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//validate day string
+			//if we're in the same year and month, then day needs to be equal or greater to current day
+			//day also needs to be in between 1 and the end month's last day
+			
+			while( (Integer.parseInt(endYear) == currentYear && endMonth.equals(month) && Integer.parseInt(endDay) < TaskActivity.getDay(date) )
+					|| (Integer.parseInt(endDay) < 1 || Integer.parseInt(endDay) > numMonthDays)) {
+				
+				System.out.println("If we're in the same month and day then the day has to be the current day or after, and it needs to be in between 1 and the month's last day");
+				System.out.println("Enter the day of the end month, needs to be inbetween 1 and " + numMonthDays);
+				
+				try {
+					endDay = keyboard.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			//format day string
+			endDay = (Integer.parseInt(endDay) < 10 ? "0" : "") + endDay;
+			
+			//turn the end year, month, and day into the end date int
+			endDate = Integer.parseInt(endYear + endMonth + endDay);
+			
+		}
+
+		
+		//attempt to create task
+		
+		
+		boolean creationSuccess = this.calendar.createTask(name, startTime, duration,  date, typeString,frequency,
+				date,  endDate);
+		
+		if(creationSuccess) {
+			System.out.println("Task has been created successfully");
+		} else {
+			System.out.println("Task failed to be created");
+		}
+		
+		
+		
+		
+		
+		
+		
+	}
 //displays year and months
 
 	public void displayYear() {
@@ -880,7 +1232,6 @@ public class Display {
 		this.displayTasksforMonth(date);
 	}
 
-//this creat
 // Probably not staying
 // \/ \/ \/ \/
 	class Menu {
