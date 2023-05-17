@@ -1470,18 +1470,23 @@ public class Calendar {
 		return scheduleList;
 	}
 
+	//gets display
 	public Display getDisplay() {
 		return display;
 	}
+	
+	//sets display
 	public void setDisplay(Display display) {
 		this.display = display;
 	}
 	
-
+	//gets schedule model
 	public ScheduleModel getScheduleModel() {
 		return this.scheduleModel;
 	}
-
+	
+	
+	//sets schedule model
 	public void setScheduleModel(ScheduleModel scheduleModel) {
 		this.scheduleModel = scheduleModel;
 	}

@@ -10,10 +10,12 @@ public class AntiTaskActivity extends TaskActivity{
     
     
     
+    //sets the iteration of the recurring task 
     public void setRecurring(RecurringTaskActivity task) {
     	this.recurringTaskLink = task;
     }
     
+    //gets recurring object
     public RecurringTaskActivity getRecurring() {
     	return this.recurringTaskLink;
     }

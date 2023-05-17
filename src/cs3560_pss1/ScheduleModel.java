@@ -2,32 +2,25 @@ package cs3560_pss1;
 
 import java.util.ArrayList;
 
+
+//basically database of schedules
 public class ScheduleModel {
 	private ArrayList<ArrayList<Schedule>> scheduleList;
 	private Calendar calendar;
 
+	
 	public ScheduleModel() {
 		scheduleList = new ArrayList<ArrayList<Schedule>>();
 	}
 
-	public TaskActivity createTask(String name) {
-		return null;
-
-	}
-
-	public void deleteTask(String name) {
-
-	}
-
-	public TaskActivity editTask(String name) {
-		return null;
-
-	}
+	//returns schedule list
 
 	public ArrayList<ArrayList<Schedule>> getScheduleList() {
 		return this.scheduleList;
 	}
 
+	
+	//creates a deep copy of the schedule list of the calendar
 	public void updateScheduleList() {
 
 		ArrayList<ArrayList<Schedule>> update = this.calendar.getScheduleList();

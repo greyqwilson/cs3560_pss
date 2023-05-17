@@ -2,10 +2,13 @@ package cs3560_pss1;
 
 import java.util.*;
 
+
+//holds a arraylist of TaskActivities for a day
 public class Schedule {
 	private int date;
 	private ArrayList<TaskActivity> taskList;
 
+	//takes in a date
 	public Schedule(int date) {
 		this.date = date;
 		this.taskList = new ArrayList<TaskActivity>();
@@ -17,6 +20,8 @@ public class Schedule {
 		this.taskList = (ArrayList<TaskActivity>) taskList.clone();
 	}
 
+	
+	//simply adds task to end of arraylist
 	public void addTask(TaskActivity task) {
 
 		this.taskList.add(task);
@@ -68,18 +73,19 @@ public class Schedule {
 		}
 	}
 
-	public void updateTask(TaskActivity task) {
 
-	}
 
+	//returns task list
 	public ArrayList<TaskActivity> getTaskList() {
 		return this.taskList;
 	}
 
+	//returns date of schedule
 	public int getDate() {
 		return date;
 	}
-
+	
+	//returns string version of datestring
 	public String getDateString() {
 		return String.valueOf(date);
 	}
