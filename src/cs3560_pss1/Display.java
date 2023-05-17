@@ -36,9 +36,41 @@ public class Display {
 		return task;
 	}
 
-	public void loadScheduleFromFile() {
+	public boolean loadScheduleFromFile(String fileName) {
 		Schedule schedFromFile;
 		JSONParser parser = new JSONParser();
+		ArrayList<TaskActivity> recurringTaskList = new ArrayList<TaskActivity>();
+		ArrayList<TaskActivity> antiTaskList = new ArrayList<TaskActivity>();;
+		ArrayList<TaskActivity> transientTaskList = new ArrayList<TaskActivity>();;
+	
+		
+	    String[] recurringTaskTypes = 
+			{
+			"Class", "Study", "Sleep", 
+			"Exercise", "Work", "Meal"
+			};
+	    
+		String[] transientTaskTypes = 
+			{
+				"Visit", "Shopping", "Appointment"	
+			};
+		
+		String antiTaskType = "Cancellation";
+		
+	    boolean isRecurringTask = false;
+	  
+	    
+	    boolean isTransientTask = false;
+	    	
+//	    	for(int i = 0; i < 3; i++) {
+//	    		if(this.type.toLowerCase().equals(transientTaskTypes[i].toLowerCase())) {
+//	    		}
+//	    	}
+	    
+	     boolean isAntiTask = false;
+	     //if(this.type.toLowerCase().equals(antiTaskType.toLowerCase())) {}
+
+
 
 		/*
 		 * TODO
@@ -50,33 +82,74 @@ public class Display {
 		 */
 
 		try {
-			JSONArray a = (JSONArray) parser.parse(new FileReader("20200101.json")); // need a method for filepath
+			JSONArray a = (JSONArray) parser.parse(new FileReader(fileName)); // need a method for filepath
 
 			for (int i = 0; i < a.size(); i++) {
+				isRecurringTask = false;
+				isTransientTask = false;
+				isAntiTask = false;
+				
 				JSONObject task = (JSONObject) a.get(i);
-
-				String taskName = (String) task.get("Name");
-
+				
 				String taskType = (String) task.get("Type");
 
-				Double taskStartDate = (Double) task.get("StartDate");
+				
+		    	for(int j = 0; j < 6; j++) {
+		    		if(taskType.toLowerCase().equals(recurringTaskTypes[j].toLowerCase())) {
+		    			isRecurringTask = true;
+		    		}
+		    	}
+		    	
+		    	for(int j = 0; j < 3; j++) {
+		    		if(taskType.toLowerCase().equals(transientTaskTypes[j].toLowerCase())) {
+		    			isTransientTask = true;
+		    		}
+		    	}
+		    	
+		    	if(taskType.toLowerCase().equals(antiTaskType.toLowerCase())) {
+		    		isAntiTask = true;
+		    	}
+		    	
+				String taskName = (String) task.get("Name");
 
-				Double taskStartTime = (Double) task.get("StartTime");
+				Double taskStartTime = Double.parseDouble(task.get("StartTime").toString());
 
-				Double taskDuration = (Double) task.get("Duration");
+				Double taskDuration = Double.parseDouble(task.get("Duration").toString());
+				
+				Integer taskDate = !isRecurringTask ? ((Long) task.get("Date")).intValue() : 0;
+				
+				Integer taskStartDate = isRecurringTask ? ((Long) task.get("StartDate")).intValue() : 0;
 
-				Long taskEndDate = (Long) task.get("EndDate");
+				Integer taskEndDate = isRecurringTask ? ((Long) task.get("EndDate")).intValue() : 0;
 
-				Long taskFrequency = (Long) task.get("Frequency");
+				Integer taskFrequency = isRecurringTask ? ((Long) task.get("Frequency")).intValue() : 0;
+				
+				if(isTransientTask) {
+					TaskActivity newTask = new TransientTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskDate);
+					transientTaskList.add(newTask);
+				}
+		    	
+		    	if(isRecurringTask) {
+					TaskActivity newTask = new RecurringTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskStartDate, taskFrequency, taskStartDate, taskEndDate);
+					recurringTaskList.add(newTask);	
+		    	}
+		    	
+		    	if(isAntiTask) {
+					TaskActivity newTask = new AntiTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskDate);
+					antiTaskList.add(newTask);
 
-				System.out.println(taskName);
-				System.out.println(taskType);
-				System.out.println(taskStartDate);
-				System.out.println(taskStartTime);
-				System.out.println(taskDuration);
-				System.out.println(taskEndDate);
-				System.out.println(taskFrequency);
-			}
+		    	}
+		    	
+
+//				System.out.println(taskName);
+//				System.out.println(taskType);
+//				System.out.println(taskStartDate);
+//				System.out.println(taskStartTime);
+//				System.out.println(taskDuration);
+//				System.out.println(taskEndDate);
+//				System.out.println(taskFrequency);
+				
+			} // end array read loop
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -88,6 +161,61 @@ public class Display {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//looping through the arrays
+		for(int i = 0; i < recurringTaskList.size(); i++) {
+			RecurringTaskActivity currentTask = (RecurringTaskActivity) recurringTaskList.get(i);
+			
+			boolean success = this.calendar.createTask(currentTask.getName(), 
+														currentTask.getStartTime(), 
+														currentTask.getDuration(), 
+														currentTask.getDate(), 
+														currentTask.getType(), 
+														currentTask.getFrequency(),
+														currentTask.getStartDate(), 
+														currentTask.getEndDate());
+			
+			if(!success) {
+				return false;
+			}
+		}
+		
+		for(int i = 0; i < antiTaskList.size(); i++) {
+			AntiTaskActivity currentTask = (AntiTaskActivity) antiTaskList.get(i);
+			
+			boolean success = this.calendar.createTask(currentTask.getName(), 
+													currentTask.getStartTime(), 
+													currentTask.getDuration(), 
+													currentTask.getDate(), 
+													currentTask.getType(), 
+													0,
+													0, 
+													0);
+			
+			if(!success) {
+				return false;
+			}
+		}
+		
+		for(int i = 0; i < transientTaskList.size(); i++) {
+			TransientTaskActivity currentTask = (TransientTaskActivity) transientTaskList.get(i);
+			
+			boolean success = this.calendar.createTask(currentTask.getName(), 
+											currentTask.getStartTime(), 
+											currentTask.getDuration(), 
+											currentTask.getDate(), 
+											currentTask.getType(), 
+											0,
+											0, 
+											0);
+			
+			if(!success) {
+				return false;
+			}
+		}
+		
+		return true;
+		
 
 		// Copy relevant data to a schedule object
 		// Pass into whoever takes it and display
