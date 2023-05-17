@@ -326,6 +326,9 @@ public class Display {
 	private static String formatTaskPrintout(TaskActivity task) {
 		String startTime = numberTimeToString(task.getStartTime(), false);
 		String title = task.getName();
+		if (title.length() > 22) {
+			title = title.substring(0, 23).concat("..");
+		}
 		String type = task.getType();
 		String endTime = numberTimeToString(task.getEndTime(), false);
 
