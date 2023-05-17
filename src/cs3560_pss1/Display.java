@@ -1158,7 +1158,45 @@ public class Display {
 				break;
 
 			case ("6"):
-				loadScheduleFromFile();
+				Boolean enteringFileInfo = true;
+				while (enteringFileInfo) {
+					System.out.println("Enter the name of the .json file in the program folder or enter nothing to load file name matching the date.");
+					try {
+						String fileName = keyboard.readLine();
+						//If they enter nothing, load filename of current date
+						if (fileName.strip().length() == 0) {
+							fileName = String.valueOf(date);
+						}
+						
+						if (fileName.matches("q")) {
+							enteringFileInfo = false;
+							break;
+						}
+						
+						fileName = fileName + ".json";
+						
+						File file = new File(fileName);
+						if (file.exists()) {
+							Boolean success = loadScheduleFromFile(fileName);
+							if (success) {
+								System.out.println("Successfully loaded tasks from file!");
+							}
+							else {
+								System.out.println("Failed to load tasks from file.");
+							}
+							enteringFileInfo = false;
+							break;
+						}
+						else {
+							System.out.println("File " + fileName + " does not exist. Try again or type q to quit.");
+							
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
+				}
+				
 				break;
 
 			case ("7"):
