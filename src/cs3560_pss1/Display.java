@@ -31,175 +31,14 @@ public class Display {
 		currentYear = (this.calendar.scheduleList.size() > 0) ? 2020 : null;
 	}
 
-	public static void mainLoop() {
-		System.out.println("\t~~Personal Schedule System~~");
-		try (BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))) {
-			mainMenu(keyboard);
-
-		} catch (IOException e) {
-
-		}
-	}
-
-	public static void printMainMenu() {
-		System.out.println("\t ~~Main Menu~~");
-		System.out.println("1. Task Creator/Editor - Create a task, edit a task, or remove a task");
-		System.out.println("2. Display today's schedule");
-		System.out.println("3. Display this week's schedule");
-		System.out.println("4. Display this month's schedule");
-		System.out.println("5. Load a previously saved schedule");
-		System.out.println("6. Save the current schedule");
-		System.out.println("7. Add a year to the calendar");
-		System.out.println("0. Exit");
-	}
-
-	public static void mainMenu(BufferedReader kb) throws IOException {
-		String choice = "-1";
-		while (!choice.matches("0")) {
-			printMainMenu();
-			System.out.println("Please select a menu option:");
-			choice = kb.readLine();
-			switch (choice) {
-			case ("1"):
-				taskMenu(kb);
-				break;
-			case ("2"):
-				displayDayMenu(kb);
-				break;
-			case ("3"):
-				displayWeekMenu(kb);
-				break;
-			case ("4"):
-				displayMonthMenu(kb);
-				break;
-			case ("5"):
-				loadFileMenu(kb);
-				break;
-			case ("6"):
-				saveFileMenu(kb);
-				break;
-			case ("0"):
-				System.out.println("Thank you for using PSS!");
-				break;
-			default:
-				System.out.println("The menu option entered was not found.");
-				break;
-			}
-		}
-	}
-
-	public static void printTaskMenu() {
-		System.out.println("\t ~~Task Menu~~");
-		System.out.println("1. Create a task");
-		System.out.println("2. Edit a task");
-		System.out.println("3. Delete a task");
-		System.out.println("0. Return to the main menu");
-	}
-
-	public static void taskMenu(BufferedReader kb) throws IOException {
-		String choice = "-1";
-		while (!choice.matches("0")) {
-			printTaskMenu();
-			System.out.println("Please select a menu option:");
-			choice = kb.readLine();
-			switch (choice) {
-			case ("1"):
-				taskMenuCreate(kb);
-				break;
-			case ("2"):
-				taskMenuEdit(kb);
-				break;
-			case ("3"):
-				taskMenuDelete(kb);
-				break;
-			case ("0"):
-				break;
-			default:
-				System.out.println("The menu option entered was not found.");
-				break;
-			}
-		}
-	}
-
-	public static void taskMenuCreate(BufferedReader kb) throws IOException {
-		System.out.println("\t --Creating a task--");
-		System.out.println("Please enter the name of the task: ");
-		String taskName = kb.readLine();
-		if (taskName.strip().length() == 0) {
-			return;
-		}
-	}
-
-	public static void taskMenuEdit(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void taskMenuDelete(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void displayDayMenu(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void displayWeekMenu(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void displayMonthMenu(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void loadFileMenu(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
-	public static void saveFileMenu(BufferedReader kb) {
-		System.out.println("Unimplemented");
-	}
-
 	public TaskActivity searchTask(String taskName) {
 		TaskActivity task = calendar.searchTask(taskName);
 		return task;
 	}
-	
 
-
-	public boolean loadScheduleFromFile() {
+	public void loadScheduleFromFile() {
 		Schedule schedFromFile;
 		JSONParser parser = new JSONParser();
-		ArrayList<TaskActivity> recurringTaskList = new ArrayList<TaskActivity>();
-		ArrayList<TaskActivity> antiTaskList = new ArrayList<TaskActivity>();;
-		ArrayList<TaskActivity> transientTaskList = new ArrayList<TaskActivity>();;
-	
-		
-	    String[] recurringTaskTypes = 
-			{
-			"Class", "Study", "Sleep", 
-			"Exercise", "Work", "Meal"
-			};
-	    
-		String[] transientTaskTypes = 
-			{
-				"Visit", "Shopping", "Appointment"	
-			};
-		
-		String antiTaskType = "Cancellation";
-		
-	    boolean isRecurringTask = false;
-	  
-	    
-	    boolean isTransientTask = false;
-	    	
-//	    	for(int i = 0; i < 3; i++) {
-//	    		if(this.type.toLowerCase().equals(transientTaskTypes[i].toLowerCase())) {
-//	    		}
-//	    	}
-	    
-	     boolean isAntiTask = false;
-	     //if(this.type.toLowerCase().equals(antiTaskType.toLowerCase())) {}
-
-
 
 		/*
 		 * TODO
@@ -214,71 +53,30 @@ public class Display {
 			JSONArray a = (JSONArray) parser.parse(new FileReader("20200101.json")); // need a method for filepath
 
 			for (int i = 0; i < a.size(); i++) {
-				isRecurringTask = false;
-				isTransientTask = false;
-				isAntiTask = false;
-				
 				JSONObject task = (JSONObject) a.get(i);
-				
+
+				String taskName = (String) task.get("Name");
+
 				String taskType = (String) task.get("Type");
 
-				
-		    	for(int j = 0; j < 6; j++) {
-		    		if(taskType.toLowerCase().equals(recurringTaskTypes[i].toLowerCase())) {
-		    			isRecurringTask = true;
-		    		}
-		    	}
-		    	
-		    	for(int j = 0; j < 3; j++) {
-		    		if(taskType.toLowerCase().equals(transientTaskTypes[i].toLowerCase())) {
-		    			isTransientTask = true;
-		    		}
-		    	}
-		    	
-		    	if(taskType.toLowerCase().equals(antiTaskType.toLowerCase())) {
-		    		isAntiTask = true;
-		    	}
-		    	
-				String taskName = (String) task.get("Name");
+				Double taskStartDate = (Double) task.get("StartDate");
 
 				Double taskStartTime = (Double) task.get("StartTime");
 
 				Double taskDuration = (Double) task.get("Duration");
-				
-				Integer taskDate = (Integer) task.get("Date"); 
-				
-				Integer taskStartDate = (Integer) task.get("StartDate");
 
-				Integer taskEndDate = (Integer) task.get("EndDate");
+				Long taskEndDate = (Long) task.get("EndDate");
 
-				Integer taskFrequency = (Integer) task.get("Frequency");
-				
-				if(isTransientTask) {
-					TaskActivity newTask = new TransientTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskDate);
-					transientTaskList.add(newTask);
-				}
-		    	
-		    	if(isRecurringTask) {
-					TaskActivity newTask = new RecurringTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskStartDate, taskFrequency, taskStartDate, taskEndDate);
-					recurringTaskList.add(newTask);	
-		    	}
-		    	
-		    	if(isAntiTask) {
-					TaskActivity newTask = new AntiTaskActivity(taskName, taskType, taskStartTime, taskDuration, taskDate);
-					antiTaskList.add(newTask);
+				Long taskFrequency = (Long) task.get("Frequency");
 
-		    	}
-		    	
-
-//				System.out.println(taskName);
-//				System.out.println(taskType);
-//				System.out.println(taskStartDate);
-//				System.out.println(taskStartTime);
-//				System.out.println(taskDuration);
-//				System.out.println(taskEndDate);
-//				System.out.println(taskFrequency);
-				
-			} // end array read loop
+				System.out.println(taskName);
+				System.out.println(taskType);
+				System.out.println(taskStartDate);
+				System.out.println(taskStartTime);
+				System.out.println(taskDuration);
+				System.out.println(taskEndDate);
+				System.out.println(taskFrequency);
+			}
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -290,43 +88,6 @@ public class Display {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//looping through the arrays
-		for(int i = 0; i < recurringTaskList.size(); i++) {
-			RecurringTaskActivity currentTask = (RecurringTaskActivity) recurringTaskList.get(i);
-			
-			boolean success = this.calendar.createTask(currentTask.getName(), currentTask.getStartTime(), currentTask.getDuration(), currentTask.getDate(), currentTask.getType(), currentTask.getFrequency(),
-					currentTask.getStartDate(), currentTask.getEndDate());
-			
-			if(!success) {
-				return false;
-			}
-		}
-		
-		for(int i = 0; i < antiTaskList.size(); i++) {
-			AntiTaskActivity currentTask = (AntiTaskActivity) antiTaskList.get(i);
-			
-			boolean success = this.calendar.createTask(currentTask.getName(), currentTask.getStartTime(), currentTask.getDuration(), currentTask.getDate(), currentTask.getType(), 0,
-					0, 0);
-			
-			if(!success) {
-				return false;
-			}
-		}
-		
-		for(int i = 0; i < transientTaskList.size(); i++) {
-			TransientTaskActivity currentTask = (TransientTaskActivity) transientTaskList.get(i);
-			
-			boolean success = this.calendar.createTask(currentTask.getName(), currentTask.getStartTime(), currentTask.getDuration(), currentTask.getDate(), currentTask.getType(), 0,
-					0, 0);
-			
-			if(!success) {
-				return false;
-			}
-		}
-		
-		return true;
-		
 
 		// Copy relevant data to a schedule object
 		// Pass into whoever takes it and display
@@ -334,8 +95,8 @@ public class Display {
 	}
 
 	public void writeScheduleToFile(TaskActivity[] tasks) {
-		//JSONObject jsonScheduleObj = new JSONObject();
-		//ArrayList<TaskActivity> tasks = schedule.getTaskList();
+		// JSONObject jsonScheduleObj = new JSONObject();
+		// ArrayList<TaskActivity> tasks = schedule.getTaskList();
 		JSONArray jsonTaskObj = new JSONArray();
 		for (TaskActivity task : tasks) {
 			JSONObject jsonObj = new JSONObject();
@@ -350,8 +111,8 @@ public class Display {
 				jsonObj.put("Frequency", ((RecurringTaskActivity) task).getFrequency());
 				jsonTaskObj.add(jsonObj);
 			}
-			
-			//It is a taskactivity or anti-task
+
+			// It is a taskactivity or anti-task
 			else {
 				jsonObj.put("Name", task.getName());
 				jsonObj.put("Type", task.getType());
@@ -360,7 +121,7 @@ public class Display {
 				jsonObj.put("Date", task.getDate());
 				jsonTaskObj.add(jsonObj);
 			}
-			
+
 //			jsonScheduleObj.put("Date", tasks[0].getDate());
 //			jsonScheduleObj.put("TaskList", jsonTaskObj);
 		}
@@ -369,18 +130,18 @@ public class Display {
 			date = String.valueOf(tasks[0].getDate());
 			FileWriter fw = new FileWriter(String.valueOf(tasks[0].getDate()) + ".json");
 			String jsonString = jsonTaskObj.toJSONString();
-			
+
 			fw.append(jsonString);
 			fw.close();
-			//fw.write(jsonString);
+			// fw.write(jsonString);
 			System.out.println(jsonString);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Something went wrong creating file writer");
 			e.printStackTrace();
 		}
-		
-		//Read object
+
+		// Read object
 //		try {
 //			FileReader fr = new FileReader(date + ".json");
 //			JSONParser parser = new JSONParser();
@@ -393,23 +154,26 @@ public class Display {
 //				JSONObject taskJson = (JSONObject) parser.parse(tasklistJson.toJSONString());
 //				System.out.println(taskJson.toJSONString());
 //			}
-			
+
 //		}
 //		catch (Exception e){
 //			e.printStackTrace();
 //		}
 	}
 
+	// gets tasks for a day based on the date, displays them
 	public void displayTasksforDay(int date) {
 		TaskActivity[] tasks;
 		tasks = calendar.getTasksForDay(date);
-		
-		System.out.println(TaskActivity.getYear(date) + "/" + TaskActivity.getMonth(date) + "/" + TaskActivity.getDay(date));
+
+		System.out.println(
+				TaskActivity.getYear(date) + "/" + TaskActivity.getMonth(date) + "/" + TaskActivity.getDay(date));
 		for (int i = 0; i < tasks.length; i++) {
 			System.out.print(formatTaskPrintout(tasks[i]));
 		}
 	}
 
+	// gets tasks for a week of a date, displays them
 	public void displayTasksforWeek(int date) {
 		Schedule[] weekSchedule;
 		weekSchedule = calendar.getTasksForWeek(date);
@@ -418,6 +182,7 @@ public class Display {
 
 	}
 
+	// gets tasks for a month of a date, displays them
 	public void displayTasksforMonth(int date) {
 		Schedule[] monthSchedule = calendar.getTasksForMonth(date);
 		System.out.print(formatMonthTasks(monthSchedule));
@@ -452,63 +217,37 @@ public class Display {
 		String typeLine = "|     (" + type + ")";
 		typeLine = formatTaskLine(typeLine, separator, true);
 
-		if (task.isRecurringTask()){
+		if (task.isRecurringTask()) {
 			int startDate = ((RecurringTaskActivity) task).getStartDate();
 			int endDate = ((RecurringTaskActivity) task).getEndDate();
-			String startDateStr = TaskActivity.getYear(startDate) + "/" + TaskActivity.getMonth(startDate) + "/" + TaskActivity.getDay(startDate);
+			String startDateStr = TaskActivity.getYear(startDate) + "/" + TaskActivity.getMonth(startDate) + "/"
+					+ TaskActivity.getDay(startDate);
 			String startDateLine = "|     " + "From:" + startDateStr;
 			startDateLine = formatTaskLine(startDateLine, separator, true);
 
-			String endDateStr = (TaskActivity.getYear(endDate) + "/" + TaskActivity.getMonth(endDate) + "/" + TaskActivity.getDay(endDate));
+			String endDateStr = (TaskActivity.getYear(endDate) + "/" + TaskActivity.getMonth(endDate) + "/"
+					+ TaskActivity.getDay(endDate));
 			String endDateLine = "|     " + "To:" + endDateStr;
 			endDateLine = formatTaskLine(endDateLine, separator, true);
 
 			String frequencyLine = ((RecurringTaskActivity) task).getFrequency() == 1 ? "|     daily" : "|     weekly";
 			frequencyLine = formatTaskLine(frequencyLine, separator, true);
-			
+
 			String endTimeLine = "|" + endTime;
 			endTimeLine = formatTaskLine(endTimeLine, separator, true);
-			String s = separator + titleLine + typeLine + startDateLine + endDateLine + frequencyLine + endTimeLine + separator;
+			String s = separator + titleLine + typeLine + startDateLine + endDateLine + frequencyLine + endTimeLine
+					+ separator;
 			return s;
-		}
-		else {
+		} else {
 			String endTimeLine = "|" + endTime;
 			endTimeLine = formatTaskLine(endTimeLine, separator, true);
 			String s = separator + titleLine + typeLine + endTimeLine + separator;
 			return s;
 		}
 
-		//String activityTypeLine = "|     (" + activityType + ")";
-		//activityTypeLine = formatTaskLine(activityTypeLine, separator, true);
-
-		//String descriptionLine = "";
-		//String descBody = "";
-		//int descLines = description.length() / separator.length() + 1;
-		// StringCharacterIterator iterator = new StringCharacterIterator(description);
-		// if (iterator.first() != StringCharacterIterator.DONE) {
-		// 	descriptionLine = descriptionLine.concat("|     -" + String.valueOf(iterator.first()));
-		// 	for (int i = 0; i <= descLines; i++) {
-		// 		if (i != 0)
-		// 			descriptionLine = descriptionLine.concat("|     ");
-		// 		char c;
-		// 		for (int j = 0; j < 33; j++) {
-		// 			c = iterator.next();
-		// 			if (c != StringCharacterIterator.DONE)
-		// 				descriptionLine = descriptionLine.concat(String.valueOf(c));
-		// 			else
-		// 				j = 34;
-		// 		}
-		// 		descriptionLine = formatTaskLine(descriptionLine, separator, true);
-		// 		descBody = descBody.concat(descriptionLine);
-		// 		descriptionLine = "";
-		// 	}
-		// } else {
-		// 	descBody = "|";
-		// 	descBody = formatTaskLine(descBody, separator, true);
-		// }
-		// descriptionLine = formatTaskLine(descriptionLine, separator);
 	}
 
+	// creates string representation of a week's tasks
 	private static String formatWeekTasks(Schedule[] schedules) {
 		Schedule schedule;
 
@@ -593,6 +332,7 @@ public class Display {
 		return weekHeadingSb.toString();
 	}
 
+	// creates string representation of a months's tasks
 	private static String formatMonthTasks(Schedule[] schedules) {
 
 		Schedule schedule;
@@ -764,6 +504,7 @@ public class Display {
 
 	}
 
+	// formats time double into clock time
 	private static String numberTimeToString(double time, boolean twentyFourHour) {
 		int hour = (int) time;
 		String timeString;
@@ -864,12 +605,13 @@ public class Display {
 		}
 		return "01";
 	}
-//if calender schedule list is empty
+//if calendar schedule list is empty
 // no years in this calendar
-//intialize year
+//initialize year
 //if we're at the end of the years listed
 //prompt user to create year
 
+	// starts the program
 	public void start() {
 		BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
 		String choice = "";
@@ -1093,7 +835,7 @@ public class Display {
 				// enter day menu
 				dayMenu(keyboard, monthInt, dayInt);
 				break;
-				// returning to year menu
+			// returning to year menu
 			case ("3"):
 				return;
 			case ("q"):
@@ -1108,11 +850,12 @@ public class Display {
 
 	public void dayMenu(BufferedReader keyboard, String month, String day) {
 		int date = Integer.valueOf(String.valueOf(currentYear) + month + day);
-		//enter while loop that can only be exited by quitting program or exiting back to month view
-		while(true) {
-			//display the day and its tasks
+		// enter while loop that can only be exited by quitting program or exiting back
+		// to month view
+		while (true) {
+			// display the day and its tasks
 			this.displayTasksforDay(date);
-			
+
 			System.out.println("Press 1 to create a task");
 			System.out.println("Press 2 to update a task");
 			System.out.println("Press 3 to delete a task");
@@ -1121,25 +864,25 @@ public class Display {
 			System.out.println("Press 6 to load day schedule from file");
 			System.out.println("Press 7 to go back to month view");
 			String choice = "";
-			
-			//ask for user input
+
+			// ask for user input
 			try {
 				choice = keyboard.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//user input evaluation
-			switch(choice) {
-			
-			case("1"):
+
+			// user input evaluation
+			switch (choice) {
+
+			case ("1"):
 				createTaskMenu(keyboard, month, date);
 				break;
-			case("2"):
+			case ("2"):
 				TaskActivity[] updateTasks;
 				updateTasks = calendar.getTasksForDay(date);
-				
+
 				// ask user for position of task starting from 1 to end of task list size
 				System.out.println(
 						"Choose the position of the task that you want to select within the list, in between 1 and "
@@ -1174,207 +917,206 @@ public class Display {
 
 				// get task
 				TaskActivity updateTask = updateTasks[updateTaskIndex];
-				//go to menu
-				updateTaskMenu(keyboard,updateTask);
-				//go to month view after
+				// go to menu
+				updateTaskMenu(keyboard, updateTask);
+				// go to month view after
 				return;
-			case("3"):
+			case ("3"):
 				TaskActivity[] tasks;
 				tasks = calendar.getTasksForDay(date);
-				//if there are no tasks to delete, say so
-				if(tasks.length == 0) {
+				// if there are no tasks to delete, say so
+				if (tasks.length == 0) {
 					System.out.println("There are no tasks to delete");
-				} 
-				//if there are tasks to delete
+				}
+				// if there are tasks to delete
 				else {
-					
-					//ask user for position of task starting from 1 to delete
-					System.out.println("Choose the position of the task that you want to remove within the list, in between 1 and " + tasks.length);
-					
-					String taskPosition ="";
+
+					// ask user for position of task starting from 1 to delete
+					System.out.println(
+							"Choose the position of the task that you want to remove within the list, in between 1 and "
+									+ tasks.length);
+
+					String taskPosition = "";
 					try {
-					 taskPosition = keyboard.readLine();
+						taskPosition = keyboard.readLine();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-					//validate task pos input
-					//if position is out of bounds
-					while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks.length) {
-						
-						System.out.println("Task position needs to be in between 1 and "  + tasks.length);
+
+					// validate task pos input
+					// if position is out of bounds
+					while (Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks.length) {
+
+						System.out.println("Task position needs to be in between 1 and " + tasks.length);
 						System.out.println("Choose it again");
 						try {
-							 taskPosition = keyboard.readLine();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							
-						
+							taskPosition = keyboard.readLine();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
-					
-					//convert to task index
-					
-					int taskIndex = Integer.parseInt(taskPosition) -1;
-					
-					//get task
+
+					// convert to task index
+
+					int taskIndex = Integer.parseInt(taskPosition) - 1;
+
+					// get task
 					TaskActivity task = tasks[taskIndex];
-					
-					//attempt to delete
+
+					// attempt to delete
 					boolean deleteSuccess = this.calendar.deleteTask(task);
-					
-					if(deleteSuccess) {
+
+					if (deleteSuccess) {
 						System.out.println("You've successfully deleted the task");
 					} else {
 						System.out.println("You were unable to delete this task");
 					}
 				}
 				break;
-			case("4"):
+			case ("4"):
 				TaskActivity[] tasks1;
 				tasks1 = calendar.getTasksForDay(date);
-				//if there are no tasks to delete, say so
-				if(tasks1.length == 0) {
+				// if there are no tasks to delete, say so
+				if (tasks1.length == 0) {
 					System.out.println("There are no tasks to select");
-				} 
-				//if there are tasks to delete
+				}
+				// if there are tasks to delete
 				else {
-				
-					//ask user for position of task starting from 1 to delete
-					System.out.println("Choose the position of the task that you want to select within the list, in between 1 and " + tasks1.length);
-					
-					String taskPosition ="";
+
+					// ask user for position of task starting from 1 to delete
+					System.out.println(
+							"Choose the position of the task that you want to select within the list, in between 1 and "
+									+ tasks1.length);
+
+					String taskPosition = "";
 					try {
-					taskPosition = keyboard.readLine();
+						taskPosition = keyboard.readLine();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-					//validate task pos input
-					//if position is out of bounds
-					while(Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks1.length) {
-						
-						System.out.println("Task position needs to be in between 1 and "  + tasks1.length);
+
+					// validate task pos input
+					// if position is out of bounds
+					while (Integer.parseInt(taskPosition) < 1 || Integer.parseInt(taskPosition) > tasks1.length) {
+
+						System.out.println("Task position needs to be in between 1 and " + tasks1.length);
 						System.out.println("Choose it again");
 						try {
 							taskPosition = keyboard.readLine();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							
-						
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
-					
-					//convert to task index
-					
-					int taskIndex = Integer.parseInt(taskPosition) -1;
-					
-					//get task
+
+					// convert to task index
+
+					int taskIndex = Integer.parseInt(taskPosition) - 1;
+
+					// get task
 					TaskActivity task = tasks1[taskIndex];
-					
+
 					taskMenu(keyboard, task);
 				}
-			
-			case("5"):
+
+			case ("5"):
 				TaskActivity[] tasks2 = calendar.getTasksForDay(date);
 				writeScheduleToFile(tasks2);
 				break;
-			
-			case("6"):
+
+			case ("6"):
 				loadScheduleFromFile();
 				break;
-				
-			case("7"):
+
+			case ("7"):
 				return;
 			}
 		}
-		
+
 	}
-	
-	// this is for displaying one task and the possible actions 
+
+	// this is for displaying one task and the possible actions
 	public void taskMenu(BufferedReader keyboard, TaskActivity task) {
-		
-		//enter while loop that can only be exited by exiting to day menu or quiting program
-		while(true) {
-			
-			System.out.print(formatTaskPrintout(task));		
-		
-		System.out.println("Press 1 to update the task");
-		System.out.println("Press 2 to delete the task");
-		System.out.println("Press 3 to replace this task with an anti task (if it is recurring)");
-		System.out.println("Press 4 to exit to day menu");
-		System.out.println("Press q to quit program");
-		
-		
-		System.out.println("Enter your choice");
-		String choice = "";
-		try {
-			choice = keyboard.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		switch(choice.toLowerCase()) {
-		case ("1"):
-			//go to update taste menu
-			updateTaskMenu(keyboard,task);
-			//go back to month view after
-			return;
-		//This deletes the task and returns the user back to the day menu
-		case("2"):
-			boolean deleteSuccess = this.calendar.deleteTask(task);
-				if(deleteSuccess) {
-				System.out.println("You've successfully deleted the task");
-				} else {
-				System.out.println("You were unable to delete this task");
-				}
-		return;
-		case("3"):
-			if (!task.isRecurringTask()){
-				System.out.println("This task is not recurring.");
+
+		// enter while loop that can only be exited by exiting to day menu or quiting
+		// program
+		while (true) {
+
+			System.out.print(formatTaskPrintout(task));
+
+			System.out.println("Press 1 to update the task");
+			System.out.println("Press 2 to delete the task");
+			System.out.println("Press 3 to replace this task with an anti task (if it is recurring)");
+			System.out.println("Press 4 to exit to day menu");
+			System.out.println("Press q to quit program");
+
+			System.out.println("Enter your choice");
+			String choice = "";
+			try {
+				choice = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else {
-				//Print out a list of days this
-				
-				try{
-					System.out.println("Enter the name of the task that will replace this:");
-					String titleStr = keyboard.readLine();
-					boolean taskMade = calendar.createTask(titleStr, task.getStartTime(), task.getDuration(), task.getDate(), "Cancellation", 0, 0, 0);
-					if (taskMade){
-						System.out.println("Task " + task.getName() + " for this day has been replaced successfully");
-						task = calendar.searchTask(titleStr);
-					}
-					else{
-						System.out.println("The task could not be replaced.");
-					}
+
+			switch (choice.toLowerCase()) {
+			case ("1"):
+				// go to update taste menu
+				updateTaskMenu(keyboard, task);
+				// go back to month view after
+				return;
+			// This deletes the task and returns the user back to the day menu
+			case ("2"):
+				boolean deleteSuccess = this.calendar.deleteTask(task);
+				if (deleteSuccess) {
+					System.out.println("You've successfully deleted the task");
+				} else {
+					System.out.println("You were unable to delete this task");
 				}
-				catch (IOException e){
-					System.out.println(e.getStackTrace());
+				return;
+			case ("3"):
+				if (!task.isRecurringTask()) {
+					System.out.println("This task is not recurring.");
+				} else {
+					// Print out a list of days this
+
+					try {
+						System.out.println("Enter the name of the task that will replace this:");
+						String titleStr = keyboard.readLine();
+						boolean taskMade = calendar.createTask(titleStr, task.getStartTime(), task.getDuration(),
+								task.getDate(), "Cancellation", 0, 0, 0);
+						if (taskMade) {
+							System.out
+									.println("Task " + task.getName() + " for this day has been replaced successfully");
+							task = calendar.searchTask(titleStr);
+						} else {
+							System.out.println("The task could not be replaced.");
+						}
+					} catch (IOException e) {
+						System.out.println(e.getStackTrace());
+					}
+
 				}
+				break;
+			case ("4"):
+				return;
+			case ("q"):
+				System.exit(0);
+			default:
+				System.out.println("Invalid choice");
 
 			}
-			break;
-		case("4"):
-			return;
-		case("q"):
-			System.exit(0);
-		default:
-			System.out.println("Invalid choice");
-			
+
 		}
-		
-		
-		}
-		
+
 	}
-	
-		// update task menu
+
+	// update task menu
 	public void updateTaskMenu(BufferedReader keyboard, TaskActivity task) {
 
 		// basic task fields
@@ -1409,7 +1151,7 @@ public class Display {
 				System.out.println("6. Start Date : " + startDate);
 				System.out.println("7. End Date : " + endDate);
 			}
-			
+
 			System.out.println("Press 8 to try to update");
 			System.out.println("Press 9 to exit back to month view (since task will be changed)");
 			System.out.println("Press q to exit program");
@@ -1418,7 +1160,7 @@ public class Display {
 
 			// ask for input
 			System.out.println("Press the number of the corresponding field to start updating it");
-			
+
 			try {
 				fieldChoice = keyboard.readLine();
 			} catch (IOException e) {
@@ -1426,15 +1168,16 @@ public class Display {
 				e.printStackTrace();
 			}
 
-			//try updating 
-			if(fieldChoice.equals("8")) {
-				
-				//create new task to replace
-				
+			// try updating
+			if (fieldChoice.equals("8")) {
+
+				// create new task to replace
+
 				TaskActivity updateTask = null;
-				
-				if(task.isRecurringTask()) {
-					updateTask = new RecurringTaskActivity(name, type, startTime, duration, date, frequency, startDate, endDate);
+
+				if (task.isRecurringTask()) {
+					updateTask = new RecurringTaskActivity(name, type, startTime, duration, date, frequency, startDate,
+							endDate);
 				} else if (task.isTransientTask()) {
 					updateTask = new TransientTaskActivity(name, type, startTime, duration, date);
 				} else if (task.isAntiTask()) {
@@ -1442,34 +1185,32 @@ public class Display {
 				} else {
 					return;
 				}
-				
-				//attempt to update 
-				
+
+				// attempt to update
+
 				boolean updateSuccess = this.calendar.updateTask(task, updateTask);
-				
-				
-				//print if successful or not
-				if(updateSuccess) {
+
+				// print if successful or not
+				if (updateSuccess) {
 					System.out.println("Update was successful");
-					
-					//update schedule model
+
+					// update schedule model
 					this.calendar.getScheduleModel().updateScheduleList();
 				} else {
 					System.out.println("Update failed");
 				}
-				
-				
-			} 
-			//exit to month view
-			else if(fieldChoice.equals("9")) {
+
+			}
+			// exit to month view
+			else if (fieldChoice.equals("9")) {
 				return;
-			} 
-			//exit program
-			else if(fieldChoice.toLowerCase().equals("q")) {
+			}
+			// exit program
+			else if (fieldChoice.toLowerCase().equals("q")) {
 				System.exit(0);
 			}
-			
-			//otherwise
+
+			// otherwise
 			else {
 				// validate input
 				// if its smaller than 1 or greater than 5 (or greater than 8 if the task is
@@ -1512,7 +1253,7 @@ public class Display {
 				// ask for inputs for each field
 				switch (fieldPos) {
 
-				//name
+				// name
 				case (1):
 					System.out.println("Enter the new name, or q to cancel current edit");
 					String newName = "";
@@ -1530,7 +1271,7 @@ public class Display {
 					}
 					break;
 
-					//start time
+				// start time
 				case (2):
 
 					// ask for the start time
@@ -1552,8 +1293,9 @@ public class Display {
 					else {
 
 						// input validation, start time is in between 0 and 23.75
-						while (!(Double.parseDouble(startTimeString) % .25 == 0) && (Double.parseDouble(startTimeString) < 0
-								|| Double.parseDouble(startTimeString) > 23.75)) {
+						while (!(Double.parseDouble(startTimeString) % .25 == 0)
+								&& (Double.parseDouble(startTimeString) < 0
+										|| Double.parseDouble(startTimeString) > 23.75)) {
 							System.out.println("Start time needs to be in between 0 and 23.75");
 							try {
 								startTimeString = keyboard.readLine();
@@ -1570,8 +1312,8 @@ public class Display {
 					}
 
 					break;
-					
-					//duration
+
+				// duration
 				case (3):
 
 					// ask for duration
@@ -1593,7 +1335,8 @@ public class Display {
 					else {
 						// input validation, duration is in between 0 and 23.75
 						while (!(Double.parseDouble(durationString) % .25 == 0)
-								&& (Double.parseDouble(durationString) < 0 || Double.parseDouble(durationString) > 23.75)) {
+								&& (Double.parseDouble(durationString) < 0
+										|| Double.parseDouble(durationString) > 23.75)) {
 							System.out.println("Duration needs to be in between 0 and 23.75");
 							try {
 								durationString = keyboard.readLine();
@@ -1608,70 +1351,69 @@ public class Display {
 						duration = Double.parseDouble(durationString);
 					}
 					break;
-					
-					//date
+
+				// date
 				case (4):
-					
-					//ask for date
+
+					// ask for date
 					String dateString = "";
-				System.out.println("Enter date, or q to cancel current edit");
-				try {
-					dateString = keyboard.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					System.out.println("Enter date, or q to cancel current edit");
+					try {
+						dateString = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-				// quit editing
-				if (dateString.toLowerCase().equals("q") ){
-					break;
-				}
+					// quit editing
+					if (dateString.toLowerCase().equals("q")) {
+						break;
+					}
 
-				// ask for date
-				else {
-					
-					
-					//input validation
-					//check if date string is right length, year is equal or above 2020, month is in between 1 and 12, day is in the valid range of month's days
-					
-					int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+					// ask for date
+					else {
 
-					while(dateString.length() != 8 || 
-							(dateString.length() == 8 && 
-							(TaskActivity.getYear(Integer.parseInt(dateString))< 2020 || 
-									TaskActivity.getMonth(Integer.parseInt(dateString)) < 1  ||
-									TaskActivity.getMonth(Integer.parseInt(dateString)) > 12 ||
-									TaskActivity.getDay(Integer.parseInt(dateString)) < 1 ||
-									TaskActivity.getDay(Integer.parseInt(dateString)) > monthDays[TaskActivity.getMonth(Integer.parseInt(dateString)) - 1]
-									))) {
-						
-						System.out.println("Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. Make sure to add a 0 before single digit numbers");
-						
-						System.out.println("Enter date, or q to cancel current edit");
-						try {
-							dateString = keyboard.readLine();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						// input validation
+						// check if date string is right length, year is equal or above 2020, month is
+						// in between 1 and 12, day is in the valid range of month's days
+
+						int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+						while (dateString.length() != 8 || (dateString.length() == 8
+								&& (TaskActivity.getYear(Integer.parseInt(dateString)) < 2020
+										|| TaskActivity.getMonth(Integer.parseInt(dateString)) < 1
+										|| TaskActivity.getMonth(Integer.parseInt(dateString)) > 12
+										|| TaskActivity.getDay(Integer.parseInt(dateString)) < 1
+										|| TaskActivity.getDay(Integer.parseInt(dateString)) > monthDays[TaskActivity
+												.getMonth(Integer.parseInt(dateString)) - 1]))) {
+
+							System.out.println(
+									"Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. Make sure to add a 0 before single digit numbers");
+
+							System.out.println("Enter date, or q to cancel current edit");
+							try {
+								dateString = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							// quit editing
+							if (dateString.toLowerCase().equals("q")) {
+								break;
+							}
+
 						}
 
-						// quit editing
-						if (dateString.toLowerCase().equals("q")) {
-							break;
-						}
-						
-				}
-				
-					//at this point we've validated the input
-					//convert to int
-					date = Integer.parseInt(dateString);
-					
-					
-				}
+						// at this point we've validated the input
+						// convert to int
+						date = Integer.parseInt(dateString);
+
+					}
 
 					break;
-				
-				//frequency
+
+				// frequency
 				case (5):
 
 					// ask for frequency
@@ -1693,164 +1435,165 @@ public class Display {
 
 					// ask for frequency
 					else {
-						
-					// input validation
 
-					while (Integer.parseInt(frequencyString) != 7 && Integer.parseInt(frequencyString) != 1) {
-						System.out.println("That's an invalid frequency");
-						System.out.println("Enter frequency, needs to be 1 or 7");
-						try {
-							frequencyString = keyboard.readLine();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						// input validation
+
+						while (Integer.parseInt(frequencyString) != 7 && Integer.parseInt(frequencyString) != 1) {
+							System.out.println("That's an invalid frequency");
+							System.out.println("Enter frequency, needs to be 1 or 7");
+							try {
+								frequencyString = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
 						}
 
+						// at this point we've validated frequency, store in int form
+
+						frequency = Integer.parseInt(frequencyString);
 					}
+					break;
 
-					// at this point we've validated frequency, store in int form
-
-					frequency = Integer.parseInt(frequencyString);
-					}
-								break;
-
-				//start date
+				// start date
 				case (6):
-					//ask for date
+					// ask for date
 					String startDateString = "";
-				System.out.println("Enter start date, or q to cancel current edit");
-				try {
-					startDateString = keyboard.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					System.out.println("Enter start date, or q to cancel current edit");
+					try {
+						startDateString = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-				// quit editing
-				if (startDateString.toLowerCase().equals("q")) {
-					break;
-				}
+					// quit editing
+					if (startDateString.toLowerCase().equals("q")) {
+						break;
+					}
 
-				// ask for date
-				else {
-					
-					
-					//input validation
-					//check if date string is right length, year is equal or above 2020, month is in between 1 and 12, day is in the valid range of month's days
-					//and if begin date is before end date
-					int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+					// ask for date
+					else {
 
-					while(startDateString.length() != 8 || 
-							(startDateString.length() == 8 && 
-							(TaskActivity.getYear(Integer.parseInt(startDateString))< 2020 || 
-									TaskActivity.getMonth(Integer.parseInt(startDateString)) < 1  ||
-									TaskActivity.getMonth(Integer.parseInt(startDateString)) > 12 ||
-									TaskActivity.getDay(Integer.parseInt(startDateString)) < 1 ||
-									TaskActivity.getDay(Integer.parseInt(startDateString)) > monthDays[TaskActivity.getMonth(Integer.parseInt(startDateString)) - 1] ||
-									Integer.parseInt(startDateString) > endDate
-									))) {
-						
-						System.out.println("Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. Begin date must also be before end date. Make sure to add a 0 before single digit numbers");
-						
-						System.out.println("Enter start date, or q to cancel current edit");
-						try {
-							startDateString = keyboard.readLine();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						// input validation
+						// check if date string is right length, year is equal or above 2020, month is
+						// in between 1 and 12, day is in the valid range of month's days
+						// and if begin date is before end date
+						int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+						while (startDateString.length() != 8 || (startDateString.length() == 8
+								&& (TaskActivity.getYear(Integer.parseInt(startDateString)) < 2020
+										|| TaskActivity.getMonth(Integer.parseInt(startDateString)) < 1
+										|| TaskActivity.getMonth(Integer.parseInt(startDateString)) > 12
+										|| TaskActivity.getDay(Integer.parseInt(startDateString)) < 1
+										|| TaskActivity
+												.getDay(Integer.parseInt(startDateString)) > monthDays[TaskActivity
+														.getMonth(Integer.parseInt(startDateString)) - 1]
+										|| Integer.parseInt(startDateString) > endDate))) {
+
+							System.out.println(
+									"Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. Begin date must also be before end date. Make sure to add a 0 before single digit numbers");
+
+							System.out.println("Enter start date, or q to cancel current edit");
+							try {
+								startDateString = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							// quit editing
+							if (startDateString.toLowerCase().equals("q")) {
+								break;
+							}
+
 						}
 
-						// quit editing
-						if (startDateString.toLowerCase().equals("q")) {
-							break;
-						}
-						
-				}
-				
-					//at this point we've validated the input
-					//convert to int
-					startDate = Integer.parseInt(startDateString);
-					
-					
-				}
+						// at this point we've validated the input
+						// convert to int
+						startDate = Integer.parseInt(startDateString);
+
+					}
 					break;
-				
-				//end date
+
+				// end date
 				case (7):
-					//ask for date
+					// ask for date
 					String endDateString = "";
-				System.out.println("Enter start date, or q to cancel current edit");
-				try {
-					endDateString = keyboard.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					System.out.println("Enter start date, or q to cancel current edit");
+					try {
+						endDateString = keyboard.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-				// quit editing
-				if (endDateString.toLowerCase().equals("q")) {
-					break;
-				}
+					// quit editing
+					if (endDateString.toLowerCase().equals("q")) {
+						break;
+					}
 
-				// ask for date
-				else {
-					
-					
-					//input validation
-					//check if date string is right length, year is equal or above 2020, month is in between 1 and 12, day is in the valid range of month's days
-					//and if end date is after begin date
-					int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+					// ask for date
+					else {
 
-					while(endDateString.length() != 8 || 
-							(endDateString.length() == 8 && 
-							(TaskActivity.getYear(Integer.parseInt(endDateString))< 2020 || 
-									TaskActivity.getMonth(Integer.parseInt(endDateString)) < 1  ||
-									TaskActivity.getMonth(Integer.parseInt(endDateString)) > 12 ||
-									TaskActivity.getDay(Integer.parseInt(endDateString)) < 1 ||
-									TaskActivity.getDay(Integer.parseInt(endDateString)) > monthDays[TaskActivity.getMonth(Integer.parseInt(endDateString)) - 1] ||
-									Integer.parseInt(endDateString) < startDate
-									))) {
-						
-						System.out.println("Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. End date must also be after begin date. Make sure to add a 0 before single digit numbers");
-						
-						System.out.println("Enter end date, or q to cancel current edit");
-						try {
-							startDateString = keyboard.readLine();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						// input validation
+						// check if date string is right length, year is equal or above 2020, month is
+						// in between 1 and 12, day is in the valid range of month's days
+						// and if end date is after begin date
+						int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+						while (endDateString.length() != 8 || (endDateString.length() == 8
+								&& (TaskActivity.getYear(Integer.parseInt(endDateString)) < 2020
+										|| TaskActivity.getMonth(Integer.parseInt(endDateString)) < 1
+										|| TaskActivity.getMonth(Integer.parseInt(endDateString)) > 12
+										|| TaskActivity.getDay(Integer.parseInt(endDateString)) < 1
+										|| TaskActivity.getDay(Integer.parseInt(endDateString)) > monthDays[TaskActivity
+												.getMonth(Integer.parseInt(endDateString)) - 1]
+										|| Integer.parseInt(endDateString) < startDate))) {
+
+							System.out.println(
+									"Invalid Date String. Years must be 2020 or greater, Months must be in between 1 and 12, and days must be in between 1 and the last day of the month. End date must also be after begin date. Make sure to add a 0 before single digit numbers");
+
+							System.out.println("Enter end date, or q to cancel current edit");
+							try {
+								startDateString = keyboard.readLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							// quit editing
+							if (endDateString.toLowerCase().equals("q")) {
+								break;
+							}
+
 						}
 
-						// quit editing
-						if (endDateString.toLowerCase().equals("q")) {
-							break;
-						}
-						
-				}
-				
-					//at this point we've validated the input
-					//convert to int
-					endDate = Integer.parseInt(endDateString);
-					
-					
-				}
+						// at this point we've validated the input
+						// convert to int
+						endDate = Integer.parseInt(endDateString);
+
+					}
 					break;
-				
-			
 
 				}
 			}
-			
 
 		}
 
 	}
 
-	//create task menu, this is only for when we're adding recurring or transient
+	// create task menu, this is only for when we're adding recurring or transient
 	public void createTaskMenu(BufferedReader keyboard, String month, int date) {
-		String name = ""; double startTime=0; double duration = 0; String typeString = ""; int frequency = 0;
-		int startDate =0; int endDate =0;		
-		
+		String name = "";
+		double startTime = 0;
+		double duration = 0;
+		String typeString = "";
+		int frequency = 0;
+		int startDate = 0;
+		int endDate = 0;
+
 		int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 		boolean isRecurring = false;
@@ -1858,22 +1601,22 @@ public class Display {
 		String[] recurringTaskTypes = { "Class", "Study", "Sleep", "Exercise", "Work", "Meal" };
 
 		String[] transientTaskTypes = { "Visit", "Shopping", "Appointment" };
-		
-		//ask until user enters a valid type
-		while(!isRecurring && !isTransient) {
+
+		// ask until user enters a valid type
+		while (!isRecurring && !isTransient) {
 			System.out.println("Please input the type of the task, choose between recurring or transient types");
 			System.out.println("Recurring Types: Class, Study, Sleep, Exercise, Work, Meal");
 			System.out.println("Transient Types: Visit, Shopping, Appointment");
-			
-			//ask for type 
+
+			// ask for type
 			try {
 				typeString = keyboard.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//look if type is valid
+
+			// look if type is valid
 			for (int i = 0; i < recurringTaskTypes.length; i++) {
 				if (typeString.toLowerCase().equals(recurringTaskTypes[i].toLowerCase())) {
 					isRecurring = true;
@@ -1881,18 +1624,15 @@ public class Display {
 			}
 
 			for (int i = 0; i < transientTaskTypes.length; i++) {
-			
 
-				if (typeString.toLowerCase().equals(transientTaskTypes[i].toLowerCase())  ) {
+				if (typeString.toLowerCase().equals(transientTaskTypes[i].toLowerCase())) {
 					isTransient = true;
 				}
 			}
 
-			
 		}
-	
-		
-		//ask for the name
+
+		// ask for the name
 		System.out.println("Enter the name");
 		try {
 			name = keyboard.readLine();
@@ -1900,9 +1640,8 @@ public class Display {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		//ask for the start time
+
+		// ask for the start time
 		String startTimeString = "";
 		System.out.println("Enter start time");
 		try {
@@ -1911,9 +1650,10 @@ public class Display {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//input validation, start time is in between 0 and 23.75
-		while( !(Double.parseDouble(startTimeString) % .25 == 0) && (Double.parseDouble(startTimeString) < 0 || Double.parseDouble(startTimeString) > 23.75) ) {
+
+		// input validation, start time is in between 0 and 23.75
+		while (!(Double.parseDouble(startTimeString) % .25 == 0)
+				&& (Double.parseDouble(startTimeString) < 0 || Double.parseDouble(startTimeString) > 23.75)) {
 			System.out.println("Start time needs to be in between 0 and 23.75");
 			try {
 				startTimeString = keyboard.readLine();
@@ -1921,51 +1661,46 @@ public class Display {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
-		
-		
-		//at this point, start time has been validated, so store start time in double form
+
+		// at this point, start time has been validated, so store start time in double
+		// form
 		startTime = Double.parseDouble(startTimeString);
-		
-		
-		
-		//ask for duration
-				String durationString = "";
-				System.out.println("Enter duration time");
-				try {
-					durationString = keyboard.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//input validation, start time is in between 0 and 23.75
-				while( !(Double.parseDouble(durationString) % .25 == 0) && (Double.parseDouble(durationString) < 0 || Double.parseDouble(durationString) > 23.75) ) {
-					System.out.println("Duration needs to be in between 0 and 23.75");
-					try {
-						durationString = keyboard.readLine();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-				
-				
-				//at this point, duration has been validated, so store duration in double form
-				duration = Double.parseDouble(durationString);
-				
-				
-				
-		//if its recurring, ask for frequency, start date, and end date;
-		if(isRecurring) {
-			
-			
-			//ask for frequency
-			
+
+		// ask for duration
+		String durationString = "";
+		System.out.println("Enter duration time");
+		try {
+			durationString = keyboard.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// input validation, start time is in between 0 and 23.75
+		while (!(Double.parseDouble(durationString) % .25 == 0)
+				&& (Double.parseDouble(durationString) < 0 || Double.parseDouble(durationString) > 23.75)) {
+			System.out.println("Duration needs to be in between 0 and 23.75");
+			try {
+				durationString = keyboard.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		// at this point, duration has been validated, so store duration in double form
+		duration = Double.parseDouble(durationString);
+
+		// if its recurring, ask for frequency, start date, and end date;
+		if (isRecurring) {
+
+			// ask for frequency
+
 			String frequencyString = "";
-			
+
 			System.out.println("Enter frequency, needs to be 1 or 7");
 			try {
 				frequencyString = keyboard.readLine();
@@ -1973,10 +1708,10 @@ public class Display {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//input validation
-			
-			while(Integer.parseInt(frequencyString) != 7 && Integer.parseInt(frequencyString) != 1) {
+
+			// input validation
+
+			while (Integer.parseInt(frequencyString) != 7 && Integer.parseInt(frequencyString) != 1) {
 				System.out.println("That's an invalid frequency");
 				System.out.println("Enter frequency, needs to be 1 or 7");
 				try {
@@ -1985,19 +1720,19 @@ public class Display {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
-			
-			//at this point we've validated frequency, store in int form
-			
+
+			// at this point we've validated frequency, store in int form
+
 			frequency = Integer.parseInt(frequencyString);
-			
-			//assume start date is the current date;
-			
-			//ask for end date
+
+			// assume start date is the current date;
+
+			// ask for end date
 			System.out.println("Enter the date you want this recurring task to stop");
-			
-			//ask for end year
+
+			// ask for end year
 			System.out.println("Enter the year");
 			String endYear = "";
 			try {
@@ -2006,11 +1741,12 @@ public class Display {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//validate year input
-			
-			while(Integer.parseInt(endYear) < 2020 || Integer.parseInt(endYear) < currentYear) {
-				System.out.println("That's an invalid year, needs to be 2020 or later and equal or greater to the current year");
+
+			// validate year input
+
+			while (Integer.parseInt(endYear) < 2020 || Integer.parseInt(endYear) < currentYear) {
+				System.out.println(
+						"That's an invalid year, needs to be 2020 or later and equal or greater to the current year");
 				endYear = "";
 				try {
 					endYear = keyboard.readLine();
@@ -2018,13 +1754,13 @@ public class Display {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
-			
-			//ask for end month
-			
+
+			// ask for end month
+
 			String endMonth = "";
-			
+
 			System.out.println("Enter the month of the end date, using the abbreviations below:"
 					+ "\nJAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC");
 			try {
@@ -2033,15 +1769,17 @@ public class Display {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//validate month input
-			//error if end month is lower than current month and we're in same year
-			if( (Integer.parseInt(endYear) == currentYear && Integer.parseInt(Display.monthStringToIntString(endMonth)) < Integer.parseInt(month)  )
-					||
-					(Integer.parseInt(Display.monthStringToIntString(endMonth)) <= 0 || Integer.parseInt(Display.monthStringToIntString(endMonth)) > 12)) {
-				System.out.println("The month cannot lower than the current month if we're in the same year, and it needs to be in between 1 and 12");
+
+			// validate month input
+			// error if end month is lower than current month and we're in same year
+			if ((Integer.parseInt(endYear) == currentYear
+					&& Integer.parseInt(Display.monthStringToIntString(endMonth)) < Integer.parseInt(month))
+					|| (Integer.parseInt(Display.monthStringToIntString(endMonth)) <= 0
+							|| Integer.parseInt(Display.monthStringToIntString(endMonth)) > 12)) {
+				System.out.println(
+						"The month cannot lower than the current month if we're in the same year, and it needs to be in between 1 and 12");
 				System.out.println("Enter the month of the end date, using the abbreviations below:"
-						+ "\nJAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC");		
+						+ "\nJAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC");
 				try {
 					endMonth = keyboard.readLine();
 				} catch (IOException e) {
@@ -2049,33 +1787,36 @@ public class Display {
 					e.printStackTrace();
 				}
 			}
-			//format the month string
-			endMonth = (Integer.parseInt(Display.monthStringToIntString(endMonth)) < 10 ? "0" : "") + Integer.parseInt(Display.monthStringToIntString(endMonth));
-			
-			
-			//ask for end day
-			int numMonthDays = monthDays[Integer.parseInt(endMonth) -1];
+			// format the month string
+			endMonth = (Integer.parseInt(Display.monthStringToIntString(endMonth)) < 10 ? "0" : "")
+					+ Integer.parseInt(Display.monthStringToIntString(endMonth));
+
+			// ask for end day
+			int numMonthDays = monthDays[Integer.parseInt(endMonth) - 1];
 
 			String endDay = "";
 			System.out.println("Enter the day of the end month, needs to be inbetween 1 and " + numMonthDays);
-			
+
 			try {
 				endDay = keyboard.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//validate day string
-			//if we're in the same year and month, then day needs to be equal or greater to current day
-			//day also needs to be in between 1 and the end month's last day
-			
-			while( (Integer.parseInt(endYear) == currentYear && endMonth.equals(month) && Integer.parseInt(endDay) < TaskActivity.getDay(date) )
+
+			// validate day string
+			// if we're in the same year and month, then day needs to be equal or greater to
+			// current day
+			// day also needs to be in between 1 and the end month's last day
+
+			while ((Integer.parseInt(endYear) == currentYear && endMonth.equals(month)
+					&& Integer.parseInt(endDay) < TaskActivity.getDay(date))
 					|| (Integer.parseInt(endDay) < 1 || Integer.parseInt(endDay) > numMonthDays)) {
-				
-				System.out.println("If we're in the same month and day then the day has to be the current day or after, and it needs to be in between 1 and the month's last day");
+
+				System.out.println(
+						"If we're in the same month and day then the day has to be the current day or after, and it needs to be in between 1 and the month's last day");
 				System.out.println("Enter the day of the end month, needs to be inbetween 1 and " + numMonthDays);
-				
+
 				try {
 					endDay = keyboard.readLine();
 				} catch (IOException e) {
@@ -2083,34 +1824,26 @@ public class Display {
 					e.printStackTrace();
 				}
 			}
-			
-			//format day string
+
+			// format day string
 			endDay = (Integer.parseInt(endDay) < 10 ? "0" : "") + endDay;
-			
-			//turn the end year, month, and day into the end date int
+
+			// turn the end year, month, and day into the end date int
 			endDate = Integer.parseInt(endYear + endMonth + endDay);
-			
+
 		}
 
-		
-		//attempt to create task
-		
-		
-		boolean creationSuccess = this.calendar.createTask(name, startTime, duration,  date, typeString,frequency,
-				date,  endDate);
-		
-		if(creationSuccess) {
+		// attempt to create task
+
+		boolean creationSuccess = this.calendar.createTask(name, startTime, duration, date, typeString, frequency, date,
+				endDate);
+
+		if (creationSuccess) {
 			System.out.println("Task has been created successfully");
 		} else {
 			System.out.println("Task failed to be created");
 		}
-		
-		
-		
-		
-		
-		
-		
+
 	}
 //displays year and months
 
@@ -2141,47 +1874,4 @@ public class Display {
 		this.displayTasksforMonth(date);
 	}
 
-// Probably not staying
-// \/ \/ \/ \/
-	class Menu {
-		String title;
-		ArrayList<Menu> options;
-		ArrayList<String> optionDescription;
-		Menu previousMenu;
-
-		public void testMenu() {
-			Menu main = new Menu("Main Menu");
-			Menu yearView = new Menu("Year View");
-			main.addMenuOption(yearView, "Year view");
-			main.linkPreviousMenu(null);
-		}
-
-		public Menu(String newTitle) {
-			this.title = newTitle;
-		}
-
-		public void addMenuOption(Menu newMenuOption, String description) {
-			options.add(newMenuOption);
-			optionDescription.add(description);
-
-		}
-
-		public void removeMenuOption(int index) {
-			options.remove(index);
-			optionDescription.remove(index);
-		}
-
-		public void linkPreviousMenu(Menu prev) {
-			this.previousMenu = prev;
-		}
-
-		public void changeTitle(String newTitle) {
-			this.title = newTitle;
-		}
-
-	}
-
-	class MenuOption {
-		String description;
-	}
 }
