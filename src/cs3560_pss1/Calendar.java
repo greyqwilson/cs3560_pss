@@ -1233,12 +1233,12 @@ public class Calendar {
 				// or end when another tasks starts
 				if ((currentTask.isRecurringTask() || currentTask.isTransientTask())
 						// if new task's start or end time is in between another task's
-						&& (taskStart >= currentStart && taskStart < currentEnd)
+						&& ((taskStart >= currentStart && taskStart < currentEnd)
 						|| (taskEnd > currentStart && taskEnd <= currentEnd)
 
 						// or vice versa
 						|| (currentStart >= taskStart && currentStart < taskEnd)
-						|| (currentEnd > taskStart && currentEnd <= taskEnd)) {
+						|| (currentEnd > taskStart && currentEnd <= taskEnd))) {
 					return true;
 				}
 
